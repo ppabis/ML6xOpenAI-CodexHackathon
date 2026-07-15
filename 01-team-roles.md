@@ -1,63 +1,71 @@
 # 01 Team Roles
 
-## Team Model
+## Three-Person Team Model
 
-Plan for four people. With three people, combine Product/Demo ownership and keep Quality independent from the primary implementation review.
+The team has three hours from planning to demo readiness. Each person owns one parallel workstream; documentation and evidence are produced alongside implementation, not afterward.
 
-| Role | Owner | Responsibilities | Primary deliverables |
+| Role | Owner | Responsibilities | Three-hour deliverables |
 | --- | --- | --- | --- |
-| Delivery Lead / Product Owner | Person 1 | Protect the one-day scope, resolve interface decisions, track dependencies, and run checkpoints. | Updated planning artifacts, decision log, scope cuts |
-| Tech Lead / Plugin Integrator | Person 2 | Own the Codex plugin manifest, local marketplace wiring, MCP integration, and final merge. | Installable plugin scaffold and working end-to-end slice |
-| Developer / TTS Owner | Person 3 | Implement validation, safe process execution, structured results, and focused unit tests. | `notify_user` tool and macOS `say` adapter |
-| Quality, Privacy, and Demo Owner | Person 4 | Challenge safety claims, own failure-path testing, document setup, and rehearse the demo. | Test evidence, risk review, PR summary, demo script |
+| Product, Quality, and Demo Lead | Person 1 | Lock scope and wording, maintain acceptance evidence, run manual validation, update the workflow log, and prepare/rehearse the presentation. | Confirmed contract, test evidence, PR summary, demo script |
+| Tech Lead and Plugin Integrator | Person 2 | Scaffold the manifest/marketplace/MCP server, prove Codex discovery, integrate the tool, and own the demo machine setup. | Installable plugin and real Codex-to-tool path |
+| TTS and Safety Developer | Person 3 | Implement validation, shell-free `say` execution, structured results, and critical automated tests. | Safe `notify_user` behavior and test suite |
 
-Names should replace `Person 1`–`Person 4` before implementation starts. Every deliverable has one accountable owner even when another person contributes.
+Replace `Person 1`–`Person 3` with names immediately. Codex assists all workstreams but is never the accountable owner.
 
-## Responsibility Boundaries
+## Decision and Review Boundaries
 
-- **Product Owner decides:** maximum lengths, urgency semantics, cooldown scope, and any midday cuts.
-- **Tech Lead decides:** plugin layout, MCP transport details, build commands, and integration fixes.
-- **TTS Owner decides:** internal module boundaries and process-adapter design, subject to security review.
-- **Quality Owner can block the demo:** shell interpolation, secret exposure, misleading success, or undocumented setup failure.
-- **All humans review:** spoken wording, privacy implications, accessibility limitations, and whether the request is genuinely actionable.
+- **Person 1 decides:** final limits, demo wording, scope cuts, test sufficiency, and which claims are presentation-ready.
+- **Person 2 decides:** plugin/MCP layout, installation commands, and integration fixes.
+- **Person 3 decides:** validation and process-adapter implementation, subject to Person 2's security review.
+- **Cross-review:** Person 2 reviews shell/process safety; Person 3 reviews MCP integration assumptions; Person 1 validates observable behavior and privacy language.
+- **Stop-ship issues:** shell interpolation, sensitive demo data, false success, no repeatable happy path, or claims without evidence.
 
 ## Parallel Workstreams
 
-### A — Plugin and Integration (Person 2)
+### A — Product, Evidence, and Presentation (Person 1)
 
-- Scaffold `.codex-plugin/plugin.json`, `.mcp.json`, and the repo marketplace entry.
-- Expose a local STDIO MCP tool named `notify_user`.
-- Prove one hard-coded end-to-end announcement early.
+- **0:00–0:15:** confirm the contract and three-hour scope.
+- Create test fixtures and the blocking PR-review scenario.
+- Keep `06-pr-summary.md` and `08-codex-workflow-log.md current at each gate.
+- From **1:30**, prepare slides/talking points and the demo sequence while validation continues.
+- At **2:15**, lead feature freeze, manual tests, and two short rehearsals.
 
-### B — Core Behavior and Safety (Person 3)
+### B — Plugin and Codex Integration (Person 2)
 
-- Define schemas, limits, safe error codes, and sensitive-content fixtures.
-- Implement the TTS adapter using argument-based process spawning with no shell.
-- Add unit tests with a fake process runner.
+- Scaffold `.codex-plugin/plugin.json`, `.mcp.json`, the skill, and repo marketplace entry.
+- Expose exactly one local STDIO MCP tool.
+- Prove Codex discovery and one fixed real announcement by **1:00**.
+- Integrate Person 3's validated handler, document install steps, and own the live demo setup.
 
-### C — Quality, Documentation, and Demo (Person 4)
+### C — Core TTS, Safety, and Tests (Person 3)
 
-- Build the manual test matrix and privacy/accessibility review.
-- Write installation, troubleshooting, and demo steps.
-- Capture success and failure evidence without recording sensitive content.
+- Implement bounded input validation and safe result codes.
+- Spawn fixed `/usr/bin/say` with an argument array and shell disabled.
+- Add only critical automated tests: happy path, boundaries, known-sensitive fixture, literal metacharacters, and unavailable/non-zero speech.
+- Deliver the handler interface to Person 2 by **1:00** and finish tests by **1:45**.
 
-### D — Coordination and Story (Person 1)
+## Hard Checkpoints
 
-- Keep task status and decisions current.
-- Prepare the blocking-task scenario and user-facing wording.
-- Own the midday go/no-go decision on nice-to-haves.
+| Time | Required outcome | If missing |
+| --- | --- | --- |
+| 0:15 | Contract, owners, stack, and demo message locked | Product Lead chooses the documented defaults; no further option analysis. |
+| 1:00 | Codex discovers the tool and a fixed real announcement plays | Switch immediately to direct project-scoped MCP configuration; disclose plugin-packaging gap. |
+| 1:30 | Validated dynamic message works end to end | Drop sensitive-pattern expansion and all nonessential error variants. |
+| 2:15 | Feature freeze; critical tests and live happy path pass | Demonstrate the strongest verified slice; no new features. |
+| 2:45 | PR evidence and demo narrative complete | Cut secondary failure demo; preserve happy path, one validation failure, and workflow evidence. |
+| 3:00 | Demo rehearsed and ready | Stop edits and use the last verified sequence. |
 
-## Handoffs and Checkpoints
+## Award Evidence Ownership
 
-- **After 30 minutes:** Product Owner confirms defaults; Tech Lead publishes the tool contract and file layout.
-- **After 90 minutes:** Workstream A demonstrates a hard-coded thin slice; Workstream B supplies validation and process interfaces.
-- **Midday:** Integrate, run the happy path, and cut all nice-to-haves if it is not reliable.
-- **Final 90 minutes:** Freeze features, execute the test matrix, update `06-pr-summary.md`, and rehearse `07-demo-script.md` twice.
+| Evidence | Owner | Minimum proof |
+| --- | --- | --- |
+| Best Working Product | Persons 2 and 3 | Real install/discovery, audible success, structured result, critical automated tests, one validation failure |
+| Best AI-Native Workflow | Person 1 | Artifacts `00`–`08`, lifecycle log, one human correction to Codex output, and decision-to-product trace |
+| Presentation credibility | Person 1 with team review | Claims match `06-pr-summary.md`; limitations are explicit |
 
-## How Codex Supports the Team
+## Codex Usage Pattern
 
-- Product: compare decisions, expose scope creep, and maintain artifacts.
-- Architecture: verify plugin conventions and review the data flow.
-- Development: generate small reviewable units only after interfaces are agreed.
-- Quality: propose adversarial inputs, tests, and privacy checks.
-- Demo: refine the narrative and record where Codex assisted.
+- Person 1 uses Codex to compress decisions, maintain evidence, and challenge claims.
+- Person 2 uses Codex for plugin scaffolding and integration diagnostics.
+- Person 3 uses Codex for small implementation units, adversarial tests, and security review.
+- Every accepted, changed, or rejected material Codex output is logged briefly at the next checkpoint.

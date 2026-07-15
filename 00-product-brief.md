@@ -73,7 +73,7 @@ Content checks reduce accidental disclosure but cannot reliably detect every sec
 
 ## Assumptions and Constraints
 
-- **Time:** One hackathon day; optimize for a reliable macOS demo.
+- **Time:** Three hours for planning, implementation, validation, presentation preparation, and rehearsal.
 - **Environment:** macOS with `say` available and a working default audio device.
 - **Dependencies:** Prefer the standard library and existing Codex plugin tooling.
 - **Privacy:** Spoken audio can be overheard; sensitive material must be excluded.
@@ -103,9 +103,20 @@ The demo also proves:
 - Success and failure are distinguishable by Codex.
 - The demo can be repeated without editing code.
 
+## Target Award Fit
+
+This project intentionally targets two categories:
+
+| Category | Why this project fits | Evidence required by demo time |
+| --- | --- | --- |
+| Best Working Product | The outcome is a real local Codex action with audible output, bounded inputs, safe execution, and observable failures. | Fresh-install run, live announcement, structured result, automated test output, one live validation failure, and one executed process-failure test. |
+| Best AI-Native Workflow | The product itself enables human-in-the-loop agent work, and Codex is used across scoping, planning, architecture, implementation, review, and demo preparation. | Completed artifacts `00`–`08`, prompt/decision history, one changed or rejected Codex output, human review evidence, and a clear lifecycle story. |
+
+Neither category should rely on presentation claims alone. The team must show executable product evidence for the first and an honest human–Codex decision trail for the second.
+
 ## Feasibility and Scope Cuts
 
-The smallest end-to-end slice is manifest + one validated action + `say` + structured results + manual demo. The highest risks are Codex plugin integration and reliable audio testing. If behind by midday, cut automated process mocking and advanced sensitive-pattern checks before cutting length validation, safe process execution, structured errors, or the manual demo.
+The smallest end-to-end slice is manifest + one validated action + `say` + structured results + manual demo. The highest risks are Codex plugin discovery and reliable audio testing. A fixed real announcement must work by 1:00 and dynamic validated input by 1:30. If either gate slips, use direct project-scoped MCP configuration, reduce sensitive checks to a small synthetic fixture set, and drop secondary error variants before cutting length validation, shell-free execution, structured results, or the manual demo.
 
 ## Open Decisions
 

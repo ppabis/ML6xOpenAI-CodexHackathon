@@ -6,20 +6,26 @@ Build a repo-scoped Codex plugin containing instructions and one bundled local S
 
 This follows current Codex plugin conventions: `.codex-plugin/plugin.json` is the required entry point; plugin components stay at the plugin root; local tools are exposed through an MCP server; and a repo marketplace can make the plugin installable for teammates.
 
+## Two-Category Architecture Rationale
+
+- **Working Product:** Use a real plugin, real MCP invocation, and real local `say` process for the primary demo. Fakes exist only at the process boundary for deterministic tests.
+- **AI-Native Workflow:** The tool creates an explicit agent-to-human handoff. Codex can request attention, but validation and instructions constrain the request, and only the human can complete or confirm the real-world action.
+- **Shared credibility:** Stable results, visible failure modes, and traceable decisions make both the product behavior and the collaboration process reviewable.
+
 ## Proposed Stack
 
 | Layer | Choice | Reason |
 | --- | --- | --- |
 | Runtime | Node.js 20+ | Mature child-process controls, fast local setup, and one runtime for server and tests. |
-| Language | TypeScript, strict mode | Typed tool inputs/results and reviewable interfaces. |
+| Language | ESM JavaScript | Removes compilation and type-tooling setup from the three-hour critical path. |
 | Tool protocol | Local STDIO MCP server | Supported local Codex tool transport; no port, auth, or network required. |
 | Plugin packaging | Codex manifest + `.mcp.json` + repo marketplace | Smallest shareable plugin shape for a local callable tool. |
 | Speech adapter | Fixed `/usr/bin/say` executable | Built into macOS and requires no external TTS service. |
 | Validation | Explicit schema plus small deterministic safety checks | Predictable length/enum enforcement without claiming comprehensive secret detection. |
-| Tests | Node test runner with dependency-injected process adapter | Minimal test dependency and no audio during unit tests. |
-| Build | TypeScript compiler to `dist/` | Produces a stable Node entry point for the MCP launch command. |
+| Tests | Built-in Node test runner with dependency-injected process adapter | No extra test dependency and no audio during automated tests. |
+| Build | None | The MCP command runs the JavaScript entry point directly. |
 
-The MCP SDK and TypeScript are the only expected development dependencies. Pin versions after scaffolding and commit the lockfile.
+The MCP SDK required by the generated scaffold is the only expected runtime dependency. Pin it after scaffolding and commit the lockfile.
 
 ## System Components
 
@@ -36,7 +42,7 @@ Local STDIO MCP server
    |
    +--> macOS speech adapter --spawn, shell:false--> /usr/bin/say
    |                                             |
-   |<-------------- exit / error / timeout ------+
+   |<---------------- exit / error --------------+
    v
 Structured result to Codex --> Codex reports status and waits for human
 ```
@@ -48,7 +54,7 @@ Structured result to Codex --> Codex reports status and waits for human
 3. Invalid input returns a safe structured error before any child process starts.
 4. Valid input becomes one bounded spoken string: `<title>. <message>`.
 5. The adapter launches the fixed `say` executable with the spoken string as an argument, never as shell syntax.
-6. The adapter waits for exit, error, or timeout and maps it to a stable result code.
+6. The adapter waits for exit or process error and maps it to a stable result code.
 7. Codex reports the result. A successful speech call does not acknowledge or perform the requested human action.
 
 Data remains in process memory for the duration of the call. The plugin does not persist, transmit, or intentionally log the title or message.
@@ -68,7 +74,7 @@ failure
   { ok: false, code: <stable code>, error: <safe diagnostic>, retryable: boolean }
 ```
 
-Initial failure codes: `INVALID_INPUT`, `SENSITIVE_CONTENT`, `TTS_UNAVAILABLE`, `TTS_FAILED`, and `TTS_TIMEOUT`. Responses do not echo the spoken payload.
+Initial failure codes: `INVALID_INPUT`, `SENSITIVE_CONTENT`, `TTS_UNAVAILABLE`, and `TTS_FAILED`. Responses do not echo the spoken payload. Timeout and cancellation are deferred beyond the three-hour MVP.
 
 ## Proposed Project Layout
 
@@ -78,13 +84,12 @@ plugins/voice-notification/
   .codex-plugin/plugin.json
   .mcp.json
   skills/voice-notification/SKILL.md
-  src/server.ts
-  src/notify-user.ts
-  src/validation.ts
-  src/speech.ts
-  tests/*.test.ts
+  src/server.js
+  src/notify-user.js
+  src/validation.js
+  src/speech.js
+  tests/*.test.js
   package.json
-  tsconfig.json
   README.md
 ```
 
@@ -102,16 +107,16 @@ Final MCP configuration fields must be generated or verified against the install
 
 ## Testing Strategy
 
-- **Unit:** validation boundaries, urgency default, risky fixtures, literal metacharacters, response mapping, and timeout behavior.
+- **Unit:** validation boundaries, urgency default, one risky fixture set, literal metacharacters, and response mapping.
 - **Contract:** MCP tool schema and stable result shapes.
 - **Integration without audio:** inject a fake executable/process runner and assert argument arrays and shell-disabled options.
 - **Manual macOS:** real `say` success, muted/unavailable-output caveat, missing-command simulation, and repeat invocation behavior.
 
 ## Key Tradeoffs
 
-- **Node/TypeScript over a shell script:** more setup, but safer process control, structured tools, and testability.
+- **JavaScript over TypeScript or a shell script:** less type safety than TypeScript, but no compile step; safer process control and better testability than shell.
 - **Blocking until `say` exits:** slower calls, but success has a clear meaning and failures are observable.
-- **macOS only:** narrow reach, but removes cloud dependencies and maximizes one-day reliability.
+- **macOS only:** narrow reach, but removes cloud dependencies and maximizes three-hour reliability.
 - **No persistence:** no history or durable cooldown, but less privacy risk and complexity.
 - **Simple sensitive checks:** demonstrable safeguards without overstating detection quality.
 
@@ -119,4 +124,6 @@ Final MCP configuration fields must be generated or verified against the install
 
 - Product Owner confirms limits, urgency semantics, and whether the title is spoken.
 - Tech Lead verifies manifest/MCP schemas and package versions during scaffolding.
-- Quality Owner approves sensitive fixtures, timeout behavior, and demo wording.
+- Product/Quality/Demo Lead approves sensitive fixtures, failure evidence, and demo wording.
+
+Each confirmed decision and any Codex suggestion that humans change or reject must be recorded in `08-codex-workflow-log.md` with its product impact.

@@ -1,81 +1,81 @@
 # 02 Task Breakdown
 
-## Problem and Working Assumptions
+## Problem and Locked Planning Defaults
 
-Codex tasks can remain blocked because requests for human intervention are easy to miss away from the Codex window. The MVP must make one short, actionable request audible and report whether local speech completed successfully.
+Codex tasks can remain blocked because human requests are easy to miss away from the window. In three hours, the team will prove one safe macOS flow: Codex calls `notify_user`, a short request is spoken through `say`, a structured result returns, and Codex waits for the human.
 
-Planning defaults, subject to Product Owner confirmation before coding:
+Unless Person 1 changes them by 0:15, use these defaults:
 
-- macOS with `say`, Node.js 20+, and an active default audio device;
-- title limit: 80 characters; message limit: 300 characters;
-- urgency: `low`, `normal`, or `high`, defaulting to `normal`, with no volume change;
-- the spoken text is `title` followed by `message`;
-- the call waits for `say` to exit; no automatic retry or persistent history;
-- content checks catch known risky patterns but cannot guarantee secret detection.
+- Node.js 20+ ESM JavaScript, local STDIO MCP, and `/usr/bin/say`;
+- title limit 80 characters and message limit 300 characters;
+- urgency `low`, `normal`, or `high`, default `normal`, with no volume effect;
+- speak `<title>. <message>` and wait for `say` to exit;
+- no automatic retry, persistence, acknowledgement, or cooldown;
+- a small known-sensitive-pattern check supplements, but does not replace, caller judgment.
 
 ## Must-Have Tasks
 
-- [ ] **M1 — Confirm contract:** approve limits, urgency values, spoken composition, and blocking behavior.
-- [ ] **M2 — Scaffold plugin:** add the required manifest, bundled MCP configuration, and repo-local marketplace entry.
-- [ ] **M3 — Expose tool:** register `notify_user(title, message, urgency?)` through a local STDIO MCP server.
-- [ ] **M4 — Validate input:** reject missing, empty, over-limit, invalid-urgency, control-character, and known-sensitive-pattern inputs.
-- [ ] **M5 — Execute speech safely:** verify `say` exists and spawn it with an argument array and shell execution disabled.
-- [ ] **M6 — Return structured results:** distinguish validation, unavailable-command, execution, timeout, and success outcomes without echoing sensitive text.
-- [ ] **M7 — Add automated tests:** cover schema boundaries, sensitive fixtures, safe process arguments, exit failures, and timeouts with no real audio.
-- [ ] **M8 — Run manual tests:** verify audible success on macOS plus over-limit and unavailable-TTS failures.
-- [ ] **M9 — Write plugin instructions:** define appropriate use, no retries, no secrets/raw output, and the requirement to await the human.
-- [ ] **M10 — Document and rehearse:** provide install/run/test steps and a repeatable demo scenario.
+- [ ] **M1 — Lock the contract (0:00–0:15):** assign three owners and confirm defaults, demo wording, and cut list.
+- [ ] **M2 — Prove plugin discovery (0:15–1:00):** scaffold manifest, MCP configuration, skill instructions, marketplace entry, and one fixed real announcement.
+- [ ] **M3 — Implement safe notification (0:15–1:15):** validate inputs, compose speech, spawn fixed `say` without a shell, and return success/validation/unavailable/execution results.
+- [ ] **M4 — Integrate dynamic tool (1:00–1:30):** connect `notify_user(title, message, urgency?)` to M3 and verify the approved message end to end.
+- [ ] **M5 — Add critical automated tests (1:00–1:45):** cover valid input, length/urgency boundaries, one known-sensitive fixture, literal metacharacters, missing `say`, and non-zero exit without playing audio.
+- [ ] **M6 — Validate and document (1:30–2:15):** run build-free checks/tests, live audio, over-limit rejection, install steps, privacy limits, and one controlled unavailable-TTS result.
+- [ ] **M7 — Capture AI-native evidence (throughout):** log material Codex prompts, human decisions, and at least one changed/rejected output with product impact.
+- [ ] **M8 — Freeze and rehearse (2:15–3:00):** finish PR evidence, prepare the 3–5 minute story, and rehearse the verified sequence twice.
 
-## Nice-To-Have Tasks
+## Explicitly Deferred
 
-- [ ] **N1 — Duplicate cooldown:** reject identical requests repeated within 60 seconds in the same server process.
-- [ ] **N2 — Cancellation:** stop an in-progress child process when the MCP request is cancelled.
-- [ ] **N3 — Voice/rate configuration:** allow bounded local preferences without changing the tool contract.
-- [ ] **N4 — Accessibility companion:** pair speech with a native visual notification.
-- [ ] **N5 — Portability design:** document adapter contracts for Windows and Linux without implementing them.
+- Timeout/cancellation support beyond basic child-process error handling.
+- Duplicate cooldown, retry scheduling, notification history, or acknowledgement.
+- Configurable voice/rate, visual notification, Windows, or Linux.
+- Broad secret detection, exhaustive contract tests, polished assets, and recorded backup unless time remains after rehearsal.
+
+Do not start deferred work during the three-hour window.
 
 ## Acceptance Criteria
 
 | ID | Criterion |
 | --- | --- |
-| AC1 | A fresh documented install exposes exactly one action, `notify_user`, to Codex. |
-| AC2 | Valid title/message input causes `say` to receive the expected combined text and returns `{ ok: true, status: "spoken" }` only after exit code 0. |
-| AC3 | Empty fields, invalid urgency, title over 80 characters, or message over 300 characters return a validation error before process launch. |
-| AC4 | Known secret fixtures and disallowed control characters are rejected; instructions explicitly prohibit all sensitive or raw untrusted content. |
-| AC5 | User-controlled text is passed as process arguments; no shell, command string interpolation, `eval`, or logged spoken payload is used. |
-| AC6 | Missing `say`, non-zero exit, and timeout return distinct safe error codes that Codex can act on. |
-| AC7 | Automated tests do not produce audio and pass using the documented command. |
-| AC8 | The manual demo audibly plays the approved PR-review message through the active output device. |
-| AC9 | Codex reports the announcement result and waits; it does not claim review or approval happened. |
-| AC10 | Setup, limitations, privacy warning, manual test, and fallback instructions are reproducible by another teammate. |
+| AC1 | A documented local setup exposes exactly one `notify_user` action to Codex, or the direct MCP fallback is clearly disclosed. |
+| AC2 | Valid input plays `<title>. <message>` through real `/usr/bin/say` and returns `spoken` only after exit code 0. |
+| AC3 | Empty, invalid-urgency, title-over-80, and message-over-300 inputs fail before process launch. |
+| AC4 | One synthetic known-sensitive fixture is rejected and instructions prohibit all sensitive/raw untrusted content without claiming complete detection. |
+| AC5 | User text is one process argument; shell execution, interpolation, payload logging, and `eval` are absent. |
+| AC6 | Missing `say` and non-zero exit return distinguishable safe failures with no payload echo. |
+| AC7 | Critical automated tests pass without producing audio. |
+| AC8 | The approved PR-review message is heard on the demo machine and Codex waits for human confirmation. |
+| AC9 | Install, test, limitation, and demo steps are reproducible without code edits. |
+| AC10 | The workflow log spans brief, planning, implementation/review, testing, and demo preparation with one substantive human correction. |
+| AC11 | The final presentation connects a human-approved decision to implementation and test evidence. |
+| AC12 | Every product claim is marked planned, implemented, tested, or demo-verified; gaps are disclosed. |
 
-## Dependencies
+## Critical Dependencies
 
-- M2 depends on M1 and current Codex plugin/MCP conventions.
-- M3 depends on M2; M4–M6 depend on the M1 contract but can be developed behind interfaces in parallel.
-- M7 depends on the validation and process-runner interfaces, not completed plugin installation.
-- M8 depends on a macOS host with audible output and M3–M6 integrated.
-- M10 depends on verified commands and evidence from M7–M8.
+- M2 and M3 start after M1 and run in parallel.
+- M4 needs the tool shell from M2 and handler contract from M3.
+- M5 starts against M3's pure interfaces; it does not wait for plugin installation.
+- M6 needs M4 plus critical M5 results.
+- M7 runs continuously; M8 uses evidence from M6–M7.
 
-No cloud API, model call, database, account credential, or network service is required at runtime.
+Runtime requires no cloud API, database, model call, account credential, or network service.
 
-## Risks and Mitigations
+## Three-Hour Schedule
 
-| Risk | Impact | Mitigation / fallback |
-| --- | --- | --- |
-| Plugin or marketplace wiring takes too long | Codex cannot call the action | Prove discovery first; fall back to direct local MCP configuration for the demo and document the gap. |
-| Audio device is muted or unavailable | False confidence or silent demo | Treat exit success as process success, not proof of audibility; preflight manually and keep a recorded backup only for presentation continuity. |
-| Sensitive data is spoken | Privacy incident | Instruction-level prohibition, deterministic risky-pattern checks, no payload logging, and human review of demo text. |
-| Shell injection | Local command execution | Use a fixed executable and argument array with shell disabled; test metacharacters as literal text. |
-| Notification fatigue | User ignores alerts | Require genuine blocking context, prohibit automatic retries, and defer cooldown to N1. |
-| `say` hangs or is interrupted | Tool never resolves | Add a bounded timeout and terminate the child; return a distinct safe error. |
+| Time | Person 1: Product/QA/Demo | Person 2: Plugin/Integration | Person 3: TTS/Safety/Tests |
+| --- | --- | --- | --- |
+| 0:00–0:15 | Lock decisions and fixtures | Preflight Codex/plugin tooling | Preflight Node and `say` |
+| 0:15–1:00 | Maintain evidence; draft demo story | Scaffold and fixed thin slice | Handler, validation, process adapter |
+| 1:00–1:30 | Prepare manual checks and docs | Integrate dynamic tool | Critical tests and integration support |
+| 1:30–1:45 | Start presentation content | Fix integration only | Finish critical tests |
+| 1:45–2:15 | Run manual acceptance and capture evidence | Clean install/demo setup | Fix critical defects and review safety |
+| 2:15–2:45 | Freeze, finish PR summary/demo script | Reproduce live path | Confirm tests and limitations |
+| 2:45–3:00 | Lead two concise rehearsals | Run product steps | Present quality/safety evidence |
 
-## Parallel Execution and Timeboxes
+## Fallback Priority
 
-- **0:00–0:30:** M1, ownership, architecture confirmation.
-- **0:30–1:30:** M2–M3 thin slice; in parallel define M4–M7 interfaces and M9 instructions.
-- **1:30–3:30:** M4–M7 implementation and integration; documentation starts against verified commands.
-- **3:30–4:30:** M8 failure-path and audio validation; fix only must-have defects.
-- **4:30–5:30:** M10, PR evidence, privacy review, and two demo rehearsals.
-
-At midday, drop N1–N5. If the integrated happy path is still failing, use the fallback scope in `04-implementation-plan.md`.
+1. Preserve real speech, length validation, shell-free execution, one structured failure, and the live demo.
+2. Preserve one critical automated test group and honest workflow evidence.
+3. Use direct MCP configuration if marketplace/plugin discovery blocks the product.
+4. Cut secondary errors, broad sensitive patterns, extra documentation polish, and backup recording.
+5. Never trade a verified happy path for a wider but unfinished feature set.
