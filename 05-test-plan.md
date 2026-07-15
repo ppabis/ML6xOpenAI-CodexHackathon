@@ -74,3 +74,18 @@ Do not place spoken payloads in diagnostic logs. Screenshots and recordings may 
 - Does success overstate audibility or human completion?
 - Which Codex-generated test or safeguard did a human change, and why?
 - Is the primary product demo real while fakes remain limited to automated tests?
+
+## Follow-Up Voice Confirmation Tests
+
+- Verify text is the default confirmation mode and the wrapper removes its
+  field before calling the core notification handler.
+- Verify only explicit allowlisted phrases confirm or decline; ambiguity never
+  authorizes progress.
+- Verify the Groq request uses the fixed transcription endpoint and exactly
+  `whisper-large-v3-turbo`.
+- Verify recording is five seconds, uses a fixed ffmpeg executable and argument
+  array, and disables shell execution.
+- Verify temporary audio is deleted on success and failure, with no transcript
+  in the tool result.
+- Verify missing key, recording failure, provider failure, and unclear speech
+  fall back to typed confirmation without real audio or network calls in tests.

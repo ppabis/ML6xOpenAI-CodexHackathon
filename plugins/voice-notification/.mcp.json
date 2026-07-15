@@ -5,7 +5,10 @@
       "args": [
         "./src/index.js"
       ],
-      "cwd": "."
+      "cwd": ".",
+      "env_vars": [
+        "GROQ_API_KEY"
+      ]
     }
   }
 }

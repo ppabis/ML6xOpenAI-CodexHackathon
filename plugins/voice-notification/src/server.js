@@ -7,7 +7,7 @@ import {
 const NOTIFY_USER_TOOL = {
   name: "notify_user",
   description:
-    "Speak a short, trusted notification when a user must return to the computer to unblock work.",
+    "Speak a short, trusted notification and wait for text or voice confirmation before blocked work continues.",
   inputSchema: {
     type: "object",
     properties: {
@@ -28,6 +28,13 @@ const NOTIFY_USER_TOOL = {
         enum: ["low", "normal", "high"],
         description: "How urgently the user should return.",
       },
+      confirmationMode: {
+        type: "string",
+        enum: ["text", "voice"],
+        default: "text",
+        description:
+          "Wait for typed confirmation or record a bounded voice confirmation.",
+      },
     },
     required: ["title", "message"],
     additionalProperties: false,
@@ -42,6 +49,27 @@ const NOTIFY_USER_TOOL = {
           urgency: { enum: ["low", "normal", "high"] },
         },
         required: ["ok", "status", "urgency"],
+        additionalProperties: false,
+      },
+      {
+        properties: {
+          ok: { const: true },
+          status: {
+            enum: ["awaiting_confirmation", "confirmed", "declined"],
+          },
+          urgency: { enum: ["low", "normal", "high"] },
+          confirmation: {
+            type: "object",
+            properties: {
+              method: { enum: ["text", "voice"] },
+              state: { enum: ["pending", "confirmed", "declined"] },
+              fallbackFrom: { const: "voice" },
+            },
+            required: ["method", "state"],
+            additionalProperties: false,
+          },
+        },
+        required: ["ok", "status", "urgency", "confirmation"],
         additionalProperties: false,
       },
       {

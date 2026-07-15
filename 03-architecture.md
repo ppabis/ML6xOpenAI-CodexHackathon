@@ -120,6 +120,28 @@ Final MCP configuration fields must be generated or verified against the install
 - **No persistence:** no history or durable cooldown, but less privacy risk and complexity.
 - **Simple sensitive checks:** demonstrable safeguards without overstating detection quality.
 
+## Follow-Up Confirmation Layer
+
+The voice-confirmation branch wraps the core `notifyUser` handler rather than
+changing its validation or `/usr/bin/say` process boundary:
+
+```text
+notifyUser -> spoken -> text pending (default)
+                     -> 5-second WAV -> Groq transcription
+                                      -> local phrase classifier
+                                      -> confirmed / declined / text fallback
+```
+
+- The only transcription model is `whisper-large-v3-turbo` at Groq's fixed
+  audio-transcriptions endpoint.
+- `ffmpeg` records macOS AVFoundation audio with fixed arguments and no shell.
+- Temporary audio is deleted after transcription; transcripts and audio are
+  not returned or logged.
+- Missing credentials, microphone/ffmpeg failure, provider failure, silence,
+  and unclear speech all become typed confirmation rather than success.
+- `GROQ_API_KEY` is supplied through the environment and never stored in the
+  plugin or marketplace manifest.
+
 ## Decision Owners
 
 - Product Owner confirms limits, urgency semantics, and whether the title is spoken.

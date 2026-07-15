@@ -71,6 +71,20 @@ Content checks reduce accidental disclosure but cannot reliably detect every sec
 - Changing volume or interrupting music and calls.
 - Performing the requested real-world action on the user's behalf.
 
+## Follow-Up Extension — Confirmation
+
+The `feature/voice-confirmation` follow-up intentionally revisits the original
+speech-recognition and cloud exclusions without changing the core notification
+boundary. After local speech completes, the tool waits for typed confirmation
+by default. With explicit user opt-in, it records one five-second microphone
+clip, transcribes it through Groq using only `whisper-large-v3-turbo`, reduces
+the transcript to a deterministic confirmed/declined/unclear decision, deletes
+the clip, and falls back to typed confirmation on any ambiguity or failure.
+
+The extension does not create a conversation, listen continuously, retain
+audio/transcripts, use another inference model, or treat ambiguous speech as
+permission to continue.
+
 ## Assumptions and Constraints
 
 - **Time:** Three hours for planning, implementation, validation, presentation preparation, and rehearsal.

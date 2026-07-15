@@ -1,12 +1,14 @@
 # Voice Notification Plugin
 
-A local macOS Codex plugin that exposes one MCP tool, `notify_user`, for speaking a short human-attention request through `/usr/bin/say`. It is intended for tasks genuinely blocked on a real-world action, not routine status updates.
+A local macOS Codex plugin that exposes one MCP tool, `notify_user`, for speaking a short human-attention request through `/usr/bin/say` and waiting for typed or bounded voice confirmation.
 
 ## Requirements
 
 - macOS with `/usr/bin/say`
-- Node.js 20 or newer
+- Node.js 20.6 or newer
 - An active, audible output device
+- `ffmpeg` with macOS AVFoundation support for optional voice confirmation
+- A Groq API key for optional voice confirmation; transcription is pinned to `whisper-large-v3-turbo`
 - Person 3's `src/notify-user.js` implementation, which supplies the authoritative validation and speech handler used by the MCP entry point
 
 ## Develop and test
@@ -18,6 +20,14 @@ npm install
 npm test
 npm start
 ```
+
+For local voice-confirmation development, create an untracked repository-root `.env`:
+
+```text
+GROQ_API_KEY=your-key
+```
+
+Never commit this file or paste the key into task messages. `npm start` loads the repository-root `.env` when it exists. An installed Codex plugin instead receives `GROQ_API_KEY` from the Codex host environment through its MCP configuration.
 
 `npm start` runs the STDIO MCP server and waits for protocol input; it is normally launched by Codex rather than used interactively. Keep standard output reserved for MCP protocol messages.
 
@@ -47,6 +57,9 @@ This fallback changes packaging only; it must use the same entry point and Perso
 - Call `notify_user` only when a task cannot continue without a person's action or decision.
 - Send only a short, trusted summary. Never send secrets, credentials, raw tool output, private code, or personal data.
 - Call once, report the structured result, and wait for explicit human confirmation. Do not retry automatically.
+- `confirmationMode: "text"` returns `awaiting_confirmation` and keeps confirmation in the Codex task.
+- `confirmationMode: "voice"` records five seconds after speech, transcribes it with only `whisper-large-v3-turbo`, and accepts only a small explicit confirmation/decline phrase set.
+- Ambiguous speech, missing microphone access, missing `ffmpeg`, missing API credentials, and Groq failures fall back to typed confirmation.
 - Treat `urgency` as metadata only. It does not change volume or interrupt other audio.
 - A `spoken` result means the local speech process completed; it does not prove the user heard the message or performed the requested action.
 
@@ -54,5 +67,7 @@ This fallback changes packaging only; it must use the same entry point and Perso
 
 - macOS only; speech depends on `/usr/bin/say` and the machine's current audio routing and volume.
 - Audio may be muted, routed to speakers instead of headphones, inaccessible to some users, or overheard.
-- No automatic retry, notification history, acknowledgement, timeout, cancellation, duplicate suppression, or durable state.
+- Voice confirmation sends a temporary audio clip to Groq. The clip is deleted locally after transcription, and neither audio nor transcript is returned or logged.
+- Microphone access must be granted explicitly by macOS. Recording is bounded to five seconds and is never continuous.
+- No automatic retry, notification history, cancellation, duplicate suppression, or durable state.
 - The plugin does not complete or verify the requested real-world action.

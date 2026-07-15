@@ -49,6 +49,11 @@ test("advertises exactly notify_user with the bounded input schema", async (t) =
     "normal",
     "high",
   ]);
+  assert.deepEqual(tools[0].inputSchema.properties.confirmationMode.enum, [
+    "text",
+    "voice",
+  ]);
+  assert.equal(tools[0].inputSchema.properties.confirmationMode.default, "text");
 });
 
 test("forwards valid arguments unchanged and returns structured success", async (t) => {
