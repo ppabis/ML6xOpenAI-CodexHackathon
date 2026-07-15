@@ -28,5 +28,5 @@ codex plugin add "voice-notification@$MARKETPLACE_NAME"
 echo
 echo "Installed voice-notification from $ROOT"
 echo "Restart Codex and open a new task in any project."
-echo "For voice confirmation, expose GROQ_API_KEY to the Codex process before starting it."
+echo "For voice confirmation, set GROQ_API_KEY in $PLUGIN_ROOT/.env before installation."
 echo "Text confirmation does not require a Groq API key or microphone access."

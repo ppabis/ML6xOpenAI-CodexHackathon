@@ -16,6 +16,8 @@ repository or project where you plan to use it.
 ```bash
 tar -xzf voice-notification-local.tar.gz
 cd voice-notification-local
+cp plugins/voice-notification/.env.example plugins/voice-notification/.env
+# Edit plugins/voice-notification/.env and set GROQ_API_KEY.
 ./install.sh
 ```
 
@@ -35,4 +37,7 @@ Codex should speak the request. Start answering within five seconds with an
 explicit phrase such as “confirmed” or “not yet.” Silence, noise, unavailable
 voice capture, or an unclear transcript falls back to typed confirmation.
 
-Use `confirmationMode: "text"` to test without Groq or microphone access.
+Create the plugin-local `.env` before installation so it is included in the
+installed private plugin copy. The bundle generator and Git both exclude the
+real `.env`. Use `confirmationMode: "text"` to test without Groq or microphone
+access.

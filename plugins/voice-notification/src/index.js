@@ -3,6 +3,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { createNotifyWithConfirmation } from "./confirmation.js";
 import { createGroqTranscriber } from "./groq-transcriber.js";
 import { createMacOsVoiceCapture } from "./recorder.js";
+import { loadPluginEnvironment } from "./plugin-env.js";
 import { createVoiceNotificationServer } from "./server.js";
 import { createSileroVad } from "./silero-vad.js";
 import { createVoiceConfirmer } from "./voice-confirmation.js";
@@ -33,6 +34,7 @@ process.once("SIGINT", shutdown);
 process.once("SIGTERM", shutdown);
 
 try {
+  await loadPluginEnvironment();
   const { notifyUser } = await import("./notify-user.js");
   voiceCapture = createMacOsVoiceCapture({ vad: createSileroVad() });
   const confirmByVoice = createVoiceConfirmer({

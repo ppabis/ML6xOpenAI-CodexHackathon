@@ -20,13 +20,19 @@ npm test
 npm start
 ```
 
-For local voice-confirmation development, create an untracked repository-root `.env`:
+For voice confirmation, copy the example inside the plugin directory:
+
+```bash
+cp .env.example .env
+```
+
+Then set the key in `plugins/voice-notification/.env`:
 
 ```text
 GROQ_API_KEY=your-key
 ```
 
-Never commit this file or paste the key into task messages. `npm start` loads the repository-root `.env` when it exists. An installed Codex plugin instead receives `GROQ_API_KEY` from the Codex host environment through its MCP configuration.
+Never commit this file or paste the key into task messages. The MCP entry point loads only `GROQ_API_KEY` from this plugin-local file. A `GROQ_API_KEY` already provided by the Codex host environment takes precedence.
 
 `npm start` runs the STDIO MCP server and waits for protocol input; it is normally launched by Codex rather than used interactively. Keep standard output reserved for MCP protocol messages.
 
