@@ -1,72 +1,63 @@
 # 01 Team Roles
 
-## Team Members
+## Team Model
 
-- Person 1:
-- Person 2:
-- Person 3:
-- Person 4:
+Plan for four people. With three people, combine Product/Demo ownership and keep Quality independent from the primary implementation review.
 
-## Delivery Lead / Product Owner
+| Role | Owner | Responsibilities | Primary deliverables |
+| --- | --- | --- | --- |
+| Delivery Lead / Product Owner | Person 1 | Protect the one-day scope, resolve interface decisions, track dependencies, and run checkpoints. | Updated planning artifacts, decision log, scope cuts |
+| Tech Lead / Plugin Integrator | Person 2 | Own the Codex plugin manifest, local marketplace wiring, MCP integration, and final merge. | Installable plugin scaffold and working end-to-end slice |
+| Developer / TTS Owner | Person 3 | Implement validation, safe process execution, structured results, and focused unit tests. | `notify_user` tool and macOS `say` adapter |
+| Quality, Privacy, and Demo Owner | Person 4 | Challenge safety claims, own failure-path testing, document setup, and rehearse the demo. | Test evidence, risk review, PR summary, demo script |
 
-- Owner:
-- Responsibilities:
-  - keep scope tight
-  - make product tradeoffs
-  - keep artifacts updated
+Names should replace `Person 1`–`Person 4` before implementation starts. Every deliverable has one accountable owner even when another person contributes.
 
-## Tech Lead / Solution Architect
+## Responsibility Boundaries
 
-- Owner:
-- Responsibilities:
-  - choose stack
-  - define architecture
-  - remove implementation blockers
+- **Product Owner decides:** maximum lengths, urgency semantics, cooldown scope, and any midday cuts.
+- **Tech Lead decides:** plugin layout, MCP transport details, build commands, and integration fixes.
+- **TTS Owner decides:** internal module boundaries and process-adapter design, subject to security review.
+- **Quality Owner can block the demo:** shell interpolation, secret exposure, misleading success, or undocumented setup failure.
+- **All humans review:** spoken wording, privacy implications, accessibility limitations, and whether the request is genuinely actionable.
 
-## AI Engineer / Developer
+## Parallel Workstreams
 
-- Owner:
-- Responsibilities:
-  - generate and integrate implementation work
-  - keep the code path simple
-  - surface technical risks quickly
+### A — Plugin and Integration (Person 2)
 
-## AI Engineer / Quality Reviewer
+- Scaffold `.codex-plugin/plugin.json`, `.mcp.json`, and the repo marketplace entry.
+- Expose a local STDIO MCP tool named `notify_user`.
+- Prove one hard-coded end-to-end announcement early.
 
-- Owner:
-- Responsibilities:
-  - define validation
-  - review outputs critically
-  - capture quality evidence and limitations
+### B — Core Behavior and Safety (Person 3)
 
-## Demo / Story Owner
+- Define schemas, limits, safe error codes, and sensitive-content fixtures.
+- Implement the TTS adapter using argument-based process spawning with no shell.
+- Add unit tests with a fake process runner.
 
-- Owner:
-- Responsibilities:
-  - shape the narrative
-  - prepare demo flow
-  - capture AI-native workflow moments
+### C — Quality, Documentation, and Demo (Person 4)
 
-## How The Team Will Work In Parallel
+- Build the manual test matrix and privacy/accessibility review.
+- Write installation, troubleshooting, and demo steps.
+- Capture success and failure evidence without recording sensitive content.
 
-- Worktsream A:
-- Workstream B:
-- Workstream C:
-- Shared checkpoints:
+### D — Coordination and Story (Person 1)
 
-## How Codex Will Support Each Role
+- Keep task status and decisions current.
+- Prepare the blocking-task scenario and user-facing wording.
+- Own the midday go/no-go decision on nice-to-haves.
 
-- Product Owner: scoping, decision framing, summary writing
-- Tech Lead: stack comparison, architecture options, tradeoffs
-- Developer: implementation plans, code generation, refactors
-- Quality Reviewer: test cases, review checklists, PR summaries
-- Demo Owner: story flow, script, evidence, rehearsal notes
+## Handoffs and Checkpoints
 
-## Codex Prompt Starter
+- **After 30 minutes:** Product Owner confirms defaults; Tech Lead publishes the tool contract and file layout.
+- **After 90 minutes:** Workstream A demonstrates a hard-coded thin slice; Workstream B supplies validation and process interfaces.
+- **Midday:** Integrate, run the happy path, and cut all nice-to-haves if it is not reliable.
+- **Final 90 minutes:** Freeze features, execute the test matrix, update `06-pr-summary.md`, and rehearse `07-demo-script.md` twice.
 
-```text
-We are a 3-4 person hackathon team. Based on the idea below, suggest a practical role split, parallel workstreams, and clear handoffs. Keep it feasible for one day.
+## How Codex Supports the Team
 
-Idea:
-[paste product brief here]
-```
+- Product: compare decisions, expose scope creep, and maintain artifacts.
+- Architecture: verify plugin conventions and review the data flow.
+- Development: generate small reviewable units only after interfaces are agreed.
+- Quality: propose adversarial inputs, tests, and privacy checks.
+- Demo: refine the narrative and record where Codex assisted.
