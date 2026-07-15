@@ -45,5 +45,7 @@ fi
 echo
 echo "Installed voice-notification from $ROOT"
 echo "Restart Codex and open a new task in any project."
-echo "For voice confirmation, set GROQ_API_KEY in $PLUGIN_ROOT/.env before installation."
-echo "Text confirmation does not require a Groq API key or microphone access."
+echo "For voice responses, set GROQ_API_KEY in $PLUGIN_ROOT/.env before installation."
+echo "For ElevenLabs default Sarah speech, set ELEVENLABS_API_KEY in the same file."
+echo "Without ELEVENLABS_API_KEY, notification speech uses local macOS say."
+echo "Typed input does not require a Groq API key or microphone access."

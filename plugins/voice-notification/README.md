@@ -1,14 +1,15 @@
 # Voice Notification Plugin
 
-A local macOS Codex plugin that exposes one MCP tool, `notify_user`, for speaking a short human-attention request through `/usr/bin/say` and waiting for typed or bounded voice confirmation.
+A local macOS Codex plugin that exposes one MCP tool, `notify_user`, for speaking a short human-attention request through the default ElevenLabs Sarah voice (or `/usr/bin/say` when no ElevenLabs key is configured) and waiting for typed input or one bounded spoken response.
 
 ## Requirements
 
 - macOS with `/usr/bin/say`
 - Node.js 20.6 or newer
 - An active, audible output device
-- `ffmpeg` with macOS AVFoundation support for optional streaming voice confirmation
-- A Groq API key for optional voice confirmation; transcription is pinned to `whisper-large-v3-turbo`
+- An ElevenLabs API key for cloud speech with the default English `Sarah` voice
+- `ffmpeg` with macOS AVFoundation support for optional streaming voice responses
+- A Groq API key for optional voice responses; transcription is pinned to `whisper-large-v3-turbo`
 
 ## Develop and test
 
@@ -20,7 +21,7 @@ npm test
 npm start
 ```
 
-For voice confirmation, copy the example inside the plugin directory:
+For voice responses, copy the example inside the plugin directory:
 
 ```bash
 cp .env.example .env
@@ -30,9 +31,12 @@ Then set the key in `plugins/voice-notification/.env`:
 
 ```text
 GROQ_API_KEY=your-key
+ELEVENLABS_API_KEY=your-key
 ```
 
-Never commit this file or paste the key into task messages. The MCP entry point loads only `GROQ_API_KEY` from this plugin-local file. A `GROQ_API_KEY` already provided by the Codex host environment takes precedence.
+Never commit this file or paste either key into task messages. The MCP entry point loads only `GROQ_API_KEY` and `ELEVENLABS_API_KEY` from this plugin-local file. Values already provided by the Codex host environment take precedence.
+
+When `ELEVENLABS_API_KEY` is present, the plugin uses the pinned default English `Sarah` voice ID `EXAVITQu4vr4xnSDxMaL`, synthesizes with `eleven_flash_v2_5`, and plays the temporary MP3 through `/usr/bin/afplay`. The MP3 is deleted after playback. If the key is absent, the plugin uses `/usr/bin/say`. If the key is present but ElevenLabs or Sarah is unavailable, notification fails safely and never falls back to `say`.
 
 `npm start` runs the STDIO MCP server and waits for protocol input; it is normally launched by Codex rather than used interactively. Keep standard output reserved for MCP protocol messages.
 
@@ -61,22 +65,25 @@ This fallback changes packaging only; it uses the same production entry point an
 
 - Call `notify_user` only when a task cannot continue without a person's action or decision.
 - Send only a short, trusted summary. Never send secrets, credentials, raw tool output, private code, or personal data.
+- With ElevenLabs configured, the trusted notification text is sent to ElevenLabs for synthesis. Leave `ELEVENLABS_API_KEY` unset to keep notification synthesis local through macOS `say`.
 - Titles are limited to 40 characters and messages to 200 characters.
-- Call once, report the structured result, and wait for explicit human confirmation. Do not retry automatically.
-- `confirmationMode: "text"` returns `awaiting_confirmation` and keeps confirmation in the Codex task.
+- Call once, report the structured result, and wait for explicit human input. Do not retry automatically.
+- `confirmationMode: "text"` returns `awaiting_confirmation` and keeps input in the Codex task.
 - `confirmationMode: "voice"` waits up to five seconds for actual speech to begin. Noise alone is ignored by the bundled local Silero VAD model.
 - After speech begins, recording continues until five seconds without detected speech, with a 30-second hard utterance limit and 500 ms of pre-roll to avoid clipping the first word.
 - Voice activity detection runs locally through the bundled, checksum-pinned ONNX model. Only one completed temporary clip is sent to Groq, using exactly `whisper-large-v3-turbo`.
-- Only a small explicit confirmation/decline phrase set is accepted. No speech, ambiguous speech, a busy microphone, missing microphone access, missing `ffmpeg`, unavailable ONNX inference, missing API credentials, and Groq failures fall back to typed confirmation.
+- Any non-empty transcription is returned to the calling task as `status: "responded"` with `response.message`; it is not reduced to a yes/no decision.
+- No speech, an empty transcription, a busy microphone, missing microphone access, missing `ffmpeg`, unavailable ONNX inference, missing API credentials, and Groq failures fall back to typed input.
 - Treat `urgency` as metadata only. It does not change volume or interrupt other audio.
 - A `spoken` result means the local speech process completed; it does not prove the user heard the message or performed the requested action.
 
 ## MVP limitations
 
-- macOS only; speech depends on `/usr/bin/say` and the machine's current audio routing and volume.
+- macOS only; playback depends on `/usr/bin/afplay` for ElevenLabs audio or `/usr/bin/say` without an ElevenLabs key, plus the machine's current audio routing and volume.
 - Audio may be muted, routed to speakers instead of headphones, inaccessible to some users, or overheard.
-- Voice confirmation sends a temporary audio clip to Groq. The clip is deleted locally after transcription, and neither audio nor transcript is returned or logged.
-- Microphone access must be granted explicitly by macOS. Listening occurs only for one requested confirmation, stops after five seconds without an onset, and is capped at 30 seconds after speech begins.
-- Only one microphone capture can run at a time. The ONNX session stays warm for efficient sequential confirmations, while detector state is reset between captures.
+- Voice mode sends a temporary audio clip to Groq. The clip is deleted locally after transcription; audio is never returned or logged, while the transcript is returned to the calling Codex task as the user's response.
+- Do not speak credentials, secrets, private code, or sensitive personal data into this channel.
+- Microphone access must be granted explicitly by macOS. Listening occurs only for one requested response, stops after five seconds without an onset, and is capped at 30 seconds after speech begins.
+- Only one microphone capture can run at a time. The ONNX session stays warm for efficient sequential responses, while detector state is reset between captures.
 - No automatic retry, notification history, cancellation, duplicate suppression, or durable state.
 - The plugin does not complete or verify the requested real-world action.

@@ -1,16 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import {
-  classifyConfirmation,
-  createNotifyWithConfirmation,
-} from "../src/confirmation.js";
-
-test("classifies only explicit confirmation and decline phrases", () => {
-  assert.equal(classifyConfirmation("Yes, confirmed."), "confirmed");
-  assert.equal(classifyConfirmation("Not yet."), "declined");
-  assert.equal(classifyConfirmation("I think that may be okay"), "unclear");
-});
+import { createNotifyWithConfirmation } from "../src/confirmation.js";
 
 test("defaults to text confirmation and strips wrapper input", async () => {
   const calls = [];
@@ -33,10 +24,13 @@ test("defaults to text confirmation and strips wrapper input", async () => {
   });
 });
 
-test("returns voice decisions without exposing a transcript", async () => {
+test("returns an arbitrary spoken response to the caller", async () => {
   const notify = createNotifyWithConfirmation({
     notifyUser: async () => ({ ok: true, status: "spoken", urgency: "high" }),
-    confirmByVoice: async () => "confirmed",
+    confirmByVoice: async () => ({
+      kind: "responded",
+      message: "Open the logs and check the second failure.",
+    }),
   });
 
   const result = await notify({
@@ -47,15 +41,20 @@ test("returns voice decisions without exposing a transcript", async () => {
 
   assert.deepEqual(result, {
     ok: true,
-    status: "confirmed",
+    status: "responded",
     urgency: "high",
-    confirmation: { method: "voice", state: "confirmed" },
+    response: {
+      method: "voice",
+      message: "Open the logs and check the second failure.",
+    },
   });
-  assert.equal("transcript" in result, false);
 });
 
-test("falls back to text when voice is unclear or unavailable", async () => {
-  for (const voiceResult of ["unclear", "unavailable"]) {
+test("falls back to text when voice is empty or unavailable", async () => {
+  for (const voiceResult of [
+    "unavailable",
+    { kind: "responded", message: "" },
+  ]) {
     const notify = createNotifyWithConfirmation({
       notifyUser: async () => ({ ok: true, status: "spoken", urgency: "low" }),
       confirmByVoice: async () => voiceResult,

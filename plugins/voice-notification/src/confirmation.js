@@ -1,41 +1,3 @@
-const CONFIRMED_PHRASES = new Set([
-  "confirmed",
-  "done",
-  "yes",
-  "yes confirmed",
-  "it is done",
-]);
-
-const DECLINED_PHRASES = new Set([
-  "no",
-  "not yet",
-  "declined",
-  "do not continue",
-]);
-
-function normalizeTranscript(transcript) {
-  return transcript
-    .toLowerCase()
-    .replace(/[^a-z0-9\s]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-export function classifyConfirmation(transcript) {
-  if (typeof transcript !== "string") {
-    return "unclear";
-  }
-
-  const normalized = normalizeTranscript(transcript);
-  if (CONFIRMED_PHRASES.has(normalized)) {
-    return "confirmed";
-  }
-  if (DECLINED_PHRASES.has(normalized)) {
-    return "declined";
-  }
-  return "unclear";
-}
-
 function textPending(urgency, fallbackFrom) {
   return {
     ok: true,
@@ -85,14 +47,18 @@ export function createNotifyWithConfirmation({ notifyUser, confirmByVoice }) {
       return textPending(notificationResult.urgency, "voice");
     }
 
-    if (voiceResult === "confirmed" || voiceResult === "declined") {
+    if (
+      voiceResult?.kind === "responded" &&
+      typeof voiceResult.message === "string" &&
+      voiceResult.message.length > 0
+    ) {
       return {
         ok: true,
-        status: voiceResult,
+        status: "responded",
         urgency: notificationResult.urgency,
-        confirmation: {
+        response: {
           method: "voice",
-          state: voiceResult,
+          message: voiceResult.message,
         },
       };
     }

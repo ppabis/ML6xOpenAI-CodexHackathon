@@ -3,7 +3,15 @@ import { EventEmitter } from "node:events";
 import test from "node:test";
 
 import { notifyUser } from "../src/notify-user.js";
-import { runSay, SAY_EXECUTABLE } from "../src/speech.js";
+import {
+  AFPLAY_EXECUTABLE,
+  createElevenLabsSpeechRunner,
+  createSpeechRunner,
+  ELEVENLABS_MODEL,
+  ELEVENLABS_VOICE_ID,
+  runSay,
+  SAY_EXECUTABLE,
+} from "../src/speech.js";
 
 const validInput = {
   title: "PR review needed",
@@ -233,4 +241,92 @@ test("runSay maps ENOENT and non-zero close without exposing speech", async () =
     assert.equal(error.message.includes(speech), false);
     return true;
   });
+});
+
+test("uses the default English Sarah voice and securely plays ElevenLabs audio", async () => {
+  const requests = [];
+  const writes = [];
+  const deleted = [];
+  const invocations = [];
+  const runner = createElevenLabsSpeechRunner({
+    fetchImpl: async (url, options) => {
+      requests.push({ url, options });
+      return {
+        ok: true,
+        arrayBuffer: async () => Uint8Array.from([1, 2, 3]).buffer,
+      };
+    },
+    writeFileImpl: async (path, audio, options) => {
+      writes.push({ path, audio, options });
+    },
+    unlinkImpl: async (path) => deleted.push(path),
+    tmpdirImpl: () => "/tmp",
+    randomUUIDImpl: () => "audio-id",
+    spawnImpl: (executable, args, options) => {
+      invocations.push({ executable, args, options });
+      const child = new EventEmitter();
+      queueMicrotask(() => child.emit("close", 0));
+      return child;
+    },
+  });
+
+  await runner("Review ready. Please return.", "eleven-secret");
+
+  assert.match(
+    requests[0].url,
+    new RegExp(`/v1/text-to-speech/${ELEVENLABS_VOICE_ID}`),
+  );
+  assert.deepEqual(JSON.parse(requests[0].options.body), {
+    text: "Review ready. Please return.",
+    model_id: ELEVENLABS_MODEL,
+    language_code: "en",
+  });
+  assert.equal(requests[0].options.headers["xi-api-key"], "eleven-secret");
+  assert.equal(writes[0].path, "/tmp/voice-notification-audio-id.mp3");
+  assert.equal(writes[0].options.mode, 0o600);
+  assert.deepEqual(invocations, [
+    {
+      executable: AFPLAY_EXECUTABLE,
+      args: ["/tmp/voice-notification-audio-id.mp3"],
+      options: { shell: false, stdio: "ignore" },
+    },
+  ]);
+  assert.deepEqual(deleted, ["/tmp/voice-notification-audio-id.mp3"]);
+});
+
+test("uses say only when the ElevenLabs key is absent", async () => {
+  const calls = [];
+  const withKey = createSpeechRunner({
+    apiKeyProvider: () => "eleven-key",
+    elevenLabsRunner: async (text, key) => calls.push(["eleven", text, key]),
+    sayRunner: async (text) => calls.push(["say", text]),
+  });
+  const withoutKey = createSpeechRunner({
+    apiKeyProvider: () => undefined,
+    elevenLabsRunner: async (text, key) => calls.push(["eleven", text, key]),
+    sayRunner: async (text) => calls.push(["say", text]),
+  });
+
+  await withKey("Cloud speech");
+  await withoutKey("Local speech");
+  assert.deepEqual(calls, [
+    ["eleven", "Cloud speech", "eleven-key"],
+    ["say", "Local speech"],
+  ]);
+});
+
+test("does not fall back to say when ElevenLabs fails with a configured key", async () => {
+  let sayCalls = 0;
+  const runner = createSpeechRunner({
+    apiKeyProvider: () => "eleven-key",
+    elevenLabsRunner: async () => {
+      throw new Error("provider failed");
+    },
+    sayRunner: async () => {
+      sayCalls += 1;
+    },
+  });
+
+  await assert.rejects(runner("Message"));
+  assert.equal(sayCalls, 0);
 });
