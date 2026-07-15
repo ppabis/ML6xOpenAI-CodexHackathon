@@ -129,3 +129,7 @@ Final MCP configuration fields must be generated or verified against the install
 - Product/Quality/Demo Lead approves sensitive fixtures, failure evidence, and demo wording.
 
 Each confirmed decision and any Codex suggestion that humans change or reject must be recorded in `08-codex-workflow-log.md` with its product impact.
+
+## Phase 2 Companion Architecture
+
+`plugins/mobile-notification/` is an independent MCP plugin exposing `notify_mobile`; the original `plugins/voice-notification/` remains unchanged. The mobile path validates the same 40/200 content boundary, reads a fixed sender, recipient, and API-key credentials from macOS Keychain, applies process-local rate limits, and posts a form-encoded SMS request to Twilio with Node's built-in `fetch`. Tool input contains no phone number or credentials. Automated tests inject fake Keychain and HTTP adapters, so only an explicitly approved manual test can contact Twilio.

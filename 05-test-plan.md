@@ -89,3 +89,13 @@ Do not place spoken payloads in diagnostic logs. Screenshots and recordings may 
 - Does success overstate audibility or human completion?
 - Which Codex-generated test or safeguard did a human change, and why?
 - Is the primary product demo real while fakes remain limited to automated tests?
+
+## Phase 2 Mobile SMS Results — 2026-07-15
+
+- Mobile plugin automated suite: 24/24 passing with fake Keychain and mocked HTTP; no real SMS or charge.
+- Existing voice regression suite: 17/17 passing with no source changes under `plugins/voice-notification/`.
+- Mobile plugin manifest and bundled skill validation: passed.
+- MCP contract: spawned server initialized and listed exactly `notify_mobile` with SMS-only, 40/200 input limits.
+- Safety: recipient is absent from tool input; invalid and sensitive content stop before Keychain/network access; provider and Keychain errors are payload-free.
+- Abuse controls: one request per minute and five per process-hour; no automatic retry.
+- Pending manual gate: rotate the exposed Auth Token, create a dedicated API key, configure five Keychain items, verify recipient consent/capability, and approve one synthetic SMS.

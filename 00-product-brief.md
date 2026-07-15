@@ -73,6 +73,10 @@ Content checks reduce accidental disclosure but cannot reliably detect every sec
 - Changing volume or interrupting music and calls.
 - Performing the requested real-world action on the user's behalf.
 
+## Approved Phase 2 Companion
+
+After the local-voice MVP was frozen and validated, the team approved a separate `mobile-notification` companion plugin for one consented recipient. Its first slice is SMS only through Twilio; it does not alter `notify_user`, add phone numbers to tool input, or claim delivery. Voice calls, replies, delivery webhooks, and multiple recipients remain out of scope.
+
 ## Assumptions and Constraints
 
 - **Time:** Three hours for planning, implementation, validation, presentation preparation, and rehearsal.

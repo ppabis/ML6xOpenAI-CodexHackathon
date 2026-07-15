@@ -8,6 +8,8 @@
 
 This branch implements a local macOS Codex plugin that announces short, non-sensitive requests when a task needs human attention. See [plugins/voice-notification/README.md](./plugins/voice-notification/README.md) for installation, tests, safety limits, and the demo flow.
 
+An isolated Phase 2 companion can queue a safe SMS to one consented, macOS Keychain-configured recipient without changing the local voice path. See [plugins/mobile-notification/README.md](./plugins/mobile-notification/README.md). Automated mobile tests never access real credentials or contact Twilio.
+
 This starter helps a team go from a rough idea to a credible demo within one hackathon day. It is designed for technical teams who want to use Codex across the full delivery lifecycle, not just for code generation.
 
 ## Why This Repo Exists

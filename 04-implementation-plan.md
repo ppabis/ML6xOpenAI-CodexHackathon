@@ -133,3 +133,12 @@ Never cut shell-free execution, length validation, payload-free structured resul
 ## After The Demo
 
 Timeout/cancellation, duplicate suppression, richer sensitive-content controls, visual notification, voice preferences, plugin-managed acknowledgement channels, and Windows/Linux adapters remain separate follow-up work.
+
+## Phase 2 Mobile SMS Slice
+
+1. Keep the validated local voice plugin unchanged and add a separate marketplace plugin.
+2. Implement SMS only with a fixed, consented Keychain recipient and API key.
+3. Reject unsafe input before Keychain or network access; rate-limit before provider access.
+4. Mock all credentials and HTTP in automated tests; run both plugin suites as the regression gate.
+5. Require human confirmation that the exposed Auth Token was rotated and Keychain items are configured before one real SMS test.
+6. Defer outbound calls, replies, webhooks, multiple recipients, durable rate state, and automatic retries.

@@ -80,6 +80,15 @@ Stage | Prompt/task | Codex output | Human disposition | Reason | Product impact
 - **Product impact:** The unified dependency-free plugin passes 17 tests and plugin/skill validation. Version `0.1.0+codex.20260715095321` is installed and enabled; its cached MCP server completed initialization, listed exactly `notify_user`, played a real test announcement, and returned `spoken`.
 - **Remaining human gate:** Confirm the announcement was audible through the intended output device and respond in the Codex task; repeat the demo from a fresh interactive task.
 
+### E08 — Isolated mobile SMS companion
+
+- **Human task:** Add phone delivery without impacting the working macOS voice plugin; keep credentials private and ask only when configuration is required.
+- **Codex output:** Rejected use of the Auth Token exposed in chat, required rotation, and created an independent `mobile-notification` plugin using macOS Keychain, fixed-recipient SMS, safe validation, rate limits, payload-free errors, and mocked HTTP.
+- **Human disposition:** Approved implementation and stated that Twilio details are available; real values remain outside source and conversation.
+- **Product impact:** Mobile 24/24 and unchanged voice 17/17 tests pass. SMS is additive and returns `queued`, while outbound voice, replies, delivery proof, and multiple recipients remain deferred.
+- **Pending human gate:** Confirm token rotation, dedicated API key creation, sender capability, verified recipient consent, and completion of the five Keychain items before a real SMS.
+- **Evidence:** `plugins/mobile-notification/`, `.agents/plugins/marketplace.json`, and `05-test-plan.md`.
+
 ## Human Decisions Confirmed So Far
 
 | Decision | Human rationale / source | Effect |

@@ -1,0 +1,25 @@
+{
+  "name": "mobile-notification",
+  "version": "0.1.0+codex.20260715110841",
+  "description": "Safely queue short Codex attention requests by SMS through Twilio.",
+  "author": {
+    "name": "Codex Hackathon Team"
+  },
+  "repository": "https://github.com/ppabis/ML6xOpenAI-CodexHackathon",
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "Mobile Notification",
+    "shortDescription": "Queue safe human-attention SMS alerts.",
+    "longDescription": "Send a short, validated SMS to one consented, Keychain-configured recipient when a Codex task is blocked on human input.",
+    "developerName": "Codex Hackathon Team",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Notify my phone if this task needs my input."
+    ]
+  }
+}
