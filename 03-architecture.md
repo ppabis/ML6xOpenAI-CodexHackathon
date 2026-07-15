@@ -2,7 +2,7 @@
 
 ## Architecture Decision
 
-Build a repo-scoped Codex plugin containing instructions and one bundled local STDIO MCP server. The server exposes `notify_user`, validates the request, invokes macOS `/usr/bin/say`, and returns a structured result. There is no UI, cloud API, model call, or storage layer.
+Build a repo-scoped Codex plugin containing instructions and one bundled local STDIO MCP server. The server exposes `notify_user`, validates the request, invokes macOS `/usr/bin/say`, and optionally waits for a bounded voice confirmation. Voice activity is detected locally with a pinned Silero ONNX model; one completed clip is transcribed by Groq. There is no UI, database, or durable storage layer.
 
 This follows current Codex plugin conventions: `.codex-plugin/plugin.json` is the required entry point; plugin components stay at the plugin root; local tools are exposed through an MCP server; and a repo marketplace can make the plugin installable for teammates.
 
@@ -21,11 +21,13 @@ This follows current Codex plugin conventions: `.codex-plugin/plugin.json` is th
 | Tool protocol | Local STDIO MCP server | Supported local Codex tool transport; no port, auth, or network required. |
 | Plugin packaging | Codex manifest + `.mcp.json` + repo marketplace | Smallest shareable plugin shape for a local callable tool. |
 | Speech adapter | Fixed `/usr/bin/say` executable | Built into macOS and requires no external TTS service. |
+| Voice activity | Bundled Silero v6.2 model + pinned `onnxruntime-node` | Distinguishes speech from ambient noise locally and keeps a warm inference session for repeated turns. |
+| Transcription | Groq `whisper-large-v3-turbo` | Transcribes one completed utterance; it is not used for continuous streaming or VAD. |
 | Validation | Explicit schema plus small deterministic safety checks | Predictable length/enum enforcement without claiming comprehensive secret detection. |
 | Tests | Built-in Node test runner with dependency-injected process adapter | No extra test dependency and no audio during automated tests. |
 | Build | None | The MCP command runs the JavaScript entry point directly. |
 
-The MCP SDK required by the generated scaffold is the only expected runtime dependency. Pin it after scaffolding and commit the lockfile.
+The MCP SDK and ONNX Runtime Node binding are pinned runtime dependencies. The Silero model, upstream revision, license, and checksum are committed with the plugin so startup performs no model download.
 
 ## System Components
 
@@ -47,6 +49,8 @@ Local STDIO MCP server
 Structured result to Codex --> Codex reports status and waits for human
 ```
 
+For voice confirmation, `/usr/bin/say` completes before FFmpeg begins streaming 16 kHz mono PCM. A per-capture Silero detector waits five seconds for onset, retains 500 ms of pre-roll, and ends after five seconds without speech or 30 seconds after onset. One private temporary WAV is then transcribed and deterministically classified. The shared ONNX session remains warm, but recurrent detector state never crosses capture boundaries.
+
 ## Data Flow
 
 1. Codex decides a task is genuinely blocked and summarizes trusted context into `title`, `message`, and optional `urgency`.
@@ -63,8 +67,8 @@ Data remains in process memory for the duration of the call. The plugin does not
 
 ```text
 notify_user input
-  title: string, 1..80 characters
-  message: string, 1..300 characters
+  title: string, 1..40 characters
+  message: string, 1..200 characters
   urgency?: "low" | "normal" | "high" (default "normal")
 
 success
@@ -104,6 +108,8 @@ Final MCP configuration fields must be generated or verified against the install
 - Error results omit payloads and process internals that may reveal content.
 - Spoken audio can be overheard and is not an accessible-only notification channel; the visible Codex request remains available.
 - `urgency` is metadata in MVP and never raises system volume or interrupts calls/music.
+- `low` means informational attention, `normal` means PR review/ordinary request, and `high` means critical/incident attention.
+- The speech result and listener acknowledgement are different states: `spoken` means `say` exited successfully, not that a person acknowledged it.
 
 ## Testing Strategy
 
@@ -120,9 +126,31 @@ Final MCP configuration fields must be generated or verified against the install
 - **No persistence:** no history or durable cooldown, but less privacy risk and complexity.
 - **Simple sensitive checks:** demonstrable safeguards without overstating detection quality.
 
+## Follow-Up Confirmation Layer
+
+The voice-confirmation branch wraps the core `notifyUser` handler rather than
+changing its validation or `/usr/bin/say` process boundary:
+
+```text
+notifyUser -> spoken -> text pending (default)
+                     -> 5-second WAV -> Groq transcription
+                                      -> local phrase classifier
+                                      -> confirmed / declined / text fallback
+```
+
+- The only transcription model is `whisper-large-v3-turbo` at Groq's fixed
+  audio-transcriptions endpoint.
+- `ffmpeg` records macOS AVFoundation audio with fixed arguments and no shell.
+- Temporary audio is deleted after transcription; transcripts and audio are
+  not returned or logged.
+- Missing credentials, microphone/ffmpeg failure, provider failure, silence,
+  and unclear speech all become typed confirmation rather than success.
+- `GROQ_API_KEY` is supplied through the environment and never stored in the
+  plugin or marketplace manifest.
+
 ## Decision Owners
 
-- Product Owner confirms limits, urgency semantics, and whether the title is spoken.
+- Listener acknowledgement is represented by a typed confirmation in the current Codex task after `spoken`; plugin-managed acknowledgement channels are deferred.
 - Tech Lead verifies manifest/MCP schemas and package versions during scaffolding.
 - Product/Quality/Demo Lead approves sensitive fixtures, failure evidence, and demo wording.
 

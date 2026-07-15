@@ -39,16 +39,21 @@ test("advertises exactly notify_user with the bounded input schema", async (t) =
   assert.equal(tools[0].inputSchema.additionalProperties, false);
   assert.equal(tools[0].inputSchema.properties.title.type, "string");
   assert.equal(tools[0].inputSchema.properties.title.minLength, 1);
-  assert.equal(tools[0].inputSchema.properties.title.maxLength, 80);
+  assert.equal(tools[0].inputSchema.properties.title.maxLength, 40);
   assert.equal(tools[0].inputSchema.properties.message.type, "string");
   assert.equal(tools[0].inputSchema.properties.message.minLength, 1);
-  assert.equal(tools[0].inputSchema.properties.message.maxLength, 300);
+  assert.equal(tools[0].inputSchema.properties.message.maxLength, 200);
   assert.equal(tools[0].inputSchema.properties.urgency.type, "string");
   assert.deepEqual(tools[0].inputSchema.properties.urgency.enum, [
     "low",
     "normal",
     "high",
   ]);
+  assert.deepEqual(tools[0].inputSchema.properties.confirmationMode.enum, [
+    "text",
+    "voice",
+  ]);
+  assert.equal(tools[0].inputSchema.properties.confirmationMode.default, "text");
 });
 
 test("forwards valid arguments unchanged and returns structured success", async (t) => {

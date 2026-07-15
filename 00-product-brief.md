@@ -40,6 +40,8 @@ notify_user(
 
 On macOS, the action validates the request, invokes the built-in `say` command without a shell, plays through the default audio output, and returns a structured success or error response. `urgency` communicates context only; version one does not change system volume or interrupt other audio.
 
+Confirmed interface limits are 40 characters for `title` and 200 characters for `message`. Urgency means: `low` for informational attention messages, `normal` for PR reviews and ordinary requests, and `high` for critical or incident-related requests.
+
 ## In Scope For Today
 
 - Scaffold a local Codex plugin with a valid manifest and concise usage instructions.
@@ -70,6 +72,20 @@ Content checks reduce accidental disclosure but cannot reliably detect every sec
 - Voice cloning, custom voices, scheduling, or notification history.
 - Changing volume or interrupting music and calls.
 - Performing the requested real-world action on the user's behalf.
+
+## Follow-Up Extension — Confirmation
+
+The `feature/voice-confirmation` follow-up intentionally revisits the original
+speech-recognition and cloud exclusions without changing the core notification
+boundary. After local speech completes, the tool waits for typed confirmation
+by default. With explicit user opt-in, it records one five-second microphone
+clip, transcribes it through Groq using only `whisper-large-v3-turbo`, reduces
+the transcript to a deterministic confirmed/declined/unclear decision, deletes
+the clip, and falls back to typed confirmation on any ambiguity or failure.
+
+The extension does not create a conversation, listen continuously, retain
+audio/transcripts, use another inference model, or treat ambiguous speech as
+permission to continue.
 
 ## Assumptions and Constraints
 
@@ -118,12 +134,22 @@ Neither category should rely on presentation claims alone. The team must show ex
 
 The smallest end-to-end slice is manifest + one validated action + `say` + structured results + manual demo. The highest risks are Codex plugin discovery and reliable audio testing. A fixed real announcement must work by 1:00 and dynamic validated input by 1:30. If either gate slips, use direct project-scoped MCP configuration, reduce sensitive checks to a small synthetic fixture set, and drop secondary error variants before cutting length validation, shell-free execution, structured results, or the manual demo.
 
-## Open Decisions
+## Confirmed and Pending Decisions
 
-- Final maximum title and message lengths.
-- Supported urgency values (`low`, `normal`, `high`) and whether they affect spoken wording.
-- Whether the action blocks until speech completes or returns after successful launch.
-- Minimum cooldown behavior for accidental repeated calls.
+Confirmed:
+
+- Keep role labels as Person 1, Person 2, and Person 3.
+- Limit titles to 40 characters and messages to 200 characters.
+- Support `low`, `normal`, and `high` with the meanings above; urgency does not affect system volume.
+- Speak `<title>. <message>`.
+- Treat `spoken` as speech-process completion, then require an explicit typed listener reply in the current Codex task before continuing.
+- Allow `low` only for justified informational attention, never routine automatic status chatter.
+- Defer timeout/cancellation, cooldown, history, plugin-managed acknowledgement channels, cross-platform support, and other nice-to-haves.
+- Use the synthetic PR-review message and fake password fixture documented in the test plan.
+
+Pending before the final demo:
+
+- A human teammate confirms new-task discovery, audible output, typed acknowledgement behavior, and the final privacy/demo review.
 
 ## Codex Support Requested
 

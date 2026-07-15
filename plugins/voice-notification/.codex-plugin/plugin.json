@@ -1,22 +1,23 @@
 {
   "name": "voice-notification",
-  "version": "0.1.0+codex.20260715093013",
-  "description": "Speak short, actionable Codex requests through macOS text-to-speech.",
+  "version": "0.1.0+codex.20260715110036",
+  "description": "Speak short Codex requests and wait for typed or voice confirmation on macOS.",
   "author": {
     "name": "ML6 x OpenAI Hackathon Team"
   },
+  "repository": "https://github.com/ppabis/ML6xOpenAI-CodexHackathon",
   "skills": "./skills/",
   "interface": {
     "displayName": "Voice Notification",
-    "shortDescription": "Speak blocking Codex requests on macOS.",
-    "longDescription": "Notify a user when a Codex task is genuinely blocked on human attention, using safe local macOS speech.",
+    "shortDescription": "Speak requests and wait for confirmation on macOS.",
+    "longDescription": "Notify a user when a Codex task is blocked, then wait for typed confirmation or a bounded Groq-transcribed voice response.",
     "developerName": "ML6 x OpenAI Hackathon Team",
     "category": "Productivity",
     "capabilities": [
       "Interactive"
     ],
     "defaultPrompt": [
-      "Notify me once if this task becomes blocked on my input."
+      "Notify me and wait for confirmation if this task becomes blocked."
     ]
   },
   "mcpServers": "./.mcp.json"
