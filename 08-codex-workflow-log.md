@@ -55,6 +55,14 @@ Stage | Prompt/task | Codex output | Human disposition | Reason | Product impact
 - **Product impact:** Switched TypeScript to build-free ESM JavaScript, reduced M1–M11 to M1–M8, deferred timeout/cancellation and broad testing, and started presentation work at 1:30.
 - **Evidence:** Current changes to `01-team-roles.md`–`05-test-plan.md`.
 
+### E05 — Person 1 interface decisions
+
+- **Human task:** Keep Person 1–3 labels; reduce title/message limits; define urgency use; preserve system volume; confirm spoken composition; request listener acknowledgement; defer demo-message, fixture, and final cut-list approval.
+- **Codex output:** Propagated confirmed limits and urgency semantics through the brief, task contract, architecture, implementation plan, and tests. Separated `say` process completion from listener acknowledgement and kept the latter pending.
+- **Human disposition:** Confirmed 40-character titles, 200-character messages, `low` for informational attention, `normal` for PR reviews/ordinary requests, `high` for critical/incidents, no volume effect, and `<title>. <message>` composition. Chose to retain role placeholders.
+- **Product impact:** Shorter spoken content and explicit urgency meanings are now testable. Acknowledgement cannot be implemented safely until its interaction is chosen.
+- **Evidence:** Current changes to `00-product-brief.md`–`08-codex-workflow-log.md`.
+
 ## Human Decisions Confirmed So Far
 
 | Decision | Human rationale / source | Effect |
@@ -65,21 +73,26 @@ Stage | Prompt/task | Codex output | Human disposition | Reason | Product impact
 | Keep the real-world action human-owned | Explicit out-of-scope boundary | Codex reports notification status and waits for confirmation. |
 | Target two awards | Explicit category choice | Requires both executable product proof and lifecycle/human-judgment evidence. |
 | Use three people and be demo-ready in three hours | Explicit team/time constraint | Combines roles, removes compilation, narrows tests, and adds hard stop gates. |
+| Keep role labels as Person 1, Person 2, and Person 3 | Explicit Person 1 direction | No names are required in the planning artifacts. |
+| Limit titles to 40 and messages to 200 characters | Explicit Person 1 decision | Updates validation boundaries and over-limit tests. |
+| Define urgency without volume changes | Explicit Person 1 decision | `low` = informational attention, `normal` = PR review/ordinary, `high` = critical/incident; all use current system volume. |
+| Speak title followed by message | Explicit Person 1 decision | Speech composition is `<title>. <message>`. |
 
 ## Decisions Still Requiring Human Confirmation
 
-- [ ] Assign named owners to the three roles.
-- [ ] Confirm 80-character title and 300-character message limits.
-- [ ] Confirm `low`/`normal`/`high` urgency as metadata only.
-- [ ] Confirm title + message composition and blocking-until-exit behavior.
-- [ ] Confirm test coverage and sensitive-pattern fixtures.
-- [ ] Approve the final spoken demo message and privacy review.
+- [ ] **Before implementation:** Choose listener acknowledgement. Recommended: the plugin returns `spoken` after `say` exits, then Codex waits for an explicit typed reply in the current task. A button, keypress, or voice acknowledgement adds implementation scope.
+- [ ] **Before implementation:** Decide whether `low` can announce non-blocking information. Recommended: allow it only when user attention is justified and never for automatic status chatter.
+- [ ] **Before implementation:** Explicitly approve the deferred-feature cut list. Waiting until after implementation risks scope creep inside the three-hour window.
+- [ ] **By 1:30, before validation:** Approve the final synthetic PR-review demo message.
+- [ ] **By 1:30, before validation:** Approve one fake sensitive-content fixture and the intended deny pattern.
+- [ ] **By 2:15:** Confirm executed test coverage, privacy/accessibility review, and final demo claims.
 
 ## Outputs Changed or Rejected
 
 | Codex output | Human change/rejection | Why | Resulting improvement | Evidence |
 | --- | --- | --- | --- | --- |
 | Four-role, roughly 5.5-hour TypeScript delivery plan | Human specified three people and a three-hour end-to-end deadline | Original plan could not finish implementation and presentation within the available window | Three combined owners, build-free JavaScript, hard gates, reduced P0 tests, and 2:15 freeze | E04 and current planning diff |
+| Proposed 80-character title and 300-character message limits | Human reduced limits to 40 and 200 | Shorter announcements are more appropriate for voice and the compressed demo scope | Tighter validation contract and updated boundary tests | E05 and current planning diff |
 | `[implementation example pending]` | `[pending]` | `[pending]` | `[pending]` | `[commit/diff/review]` |
 
 A cosmetic wording edit is weak evidence. Prefer a real scope, interface, security, architecture, or test decision.

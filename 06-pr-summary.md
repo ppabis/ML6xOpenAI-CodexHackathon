@@ -60,7 +60,7 @@ Never change `Not run` to `Pass` based on generated code, a plan, or expected be
 - macOS and local `say` only.
 - Process success cannot prove the audio was audible or understood.
 - Sensitive-pattern checks are incomplete and do not replace caller judgment.
-- No voice reply, acknowledgement, persistent history, automatic retry, or cross-device delivery.
+- No voice reply, plugin-managed acknowledgement channel, persistent history, automatic retry, or cross-device delivery. Codex may still wait for a typed listener response in the existing task.
 - Spoken notifications can be overheard and are not a replacement for visible text.
 
 ## Human Review Checklist

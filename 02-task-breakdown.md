@@ -4,18 +4,19 @@
 
 Codex tasks can remain blocked because human requests are easy to miss away from the window. In three hours, the team will prove one safe macOS flow: Codex calls `notify_user`, a short request is spoken through `say`, a structured result returns, and Codex waits for the human.
 
-Unless Person 1 changes them by 0:15, use these defaults:
+Use these confirmed decisions and implementation defaults; only acknowledgement remains open at 0:15:
 
 - Node.js 20+ ESM JavaScript, local STDIO MCP, and `/usr/bin/say`;
-- title limit 80 characters and message limit 300 characters;
-- urgency `low`, `normal`, or `high`, default `normal`, with no volume effect;
+- title limit 40 characters and message limit 200 characters;
+- urgency `low` for informational attention messages, `normal` for PR reviews and ordinary requests, and `high` for critical/incidents; default `normal`, with no volume effect;
 - speak `<title>. <message>` and wait for `say` to exit;
-- no automatic retry, persistence, acknowledgement, or cooldown;
+- after speech, Codex waits for listener acknowledgement; the mechanism is pending, with an explicit typed reply in the Codex task recommended for the three-hour MVP;
+- no automatic retry, persistence, plugin-managed acknowledgement channel, or cooldown;
 - a small known-sensitive-pattern check supplements, but does not replace, caller judgment.
 
 ## Must-Have Tasks
 
-- [ ] **M1 — Lock the contract (0:00–0:15):** assign three owners and confirm defaults, demo wording, and cut list.
+- [ ] **M1 — Lock the contract (0:00–0:15):** retain Person 1–3 labels, choose the listener-acknowledgement mechanism, and confirm the deferred-feature cut list.
 - [ ] **M2 — Prove plugin discovery (0:15–1:00):** scaffold manifest, MCP configuration, skill instructions, marketplace entry, and one fixed real announcement.
 - [ ] **M3 — Implement safe notification (0:15–1:15):** validate inputs, compose speech, spawn fixed `say` without a shell, and return success/validation/unavailable/execution results.
 - [ ] **M4 — Integrate dynamic tool (1:00–1:30):** connect `notify_user(title, message, urgency?)` to M3 and verify the approved message end to end.
@@ -27,7 +28,7 @@ Unless Person 1 changes them by 0:15, use these defaults:
 ## Explicitly Deferred
 
 - Timeout/cancellation support beyond basic child-process error handling.
-- Duplicate cooldown, retry scheduling, notification history, or acknowledgement.
+- Duplicate cooldown, retry scheduling, notification history, or a plugin-managed acknowledgement UI/channel.
 - Configurable voice/rate, visual notification, Windows, or Linux.
 - Broad secret detection, exhaustive contract tests, polished assets, and recorded backup unless time remains after rehearsal.
 
@@ -39,12 +40,12 @@ Do not start deferred work during the three-hour window.
 | --- | --- |
 | AC1 | A documented local setup exposes exactly one `notify_user` action to Codex, or the direct MCP fallback is clearly disclosed. |
 | AC2 | Valid input plays `<title>. <message>` through real `/usr/bin/say` and returns `spoken` only after exit code 0. |
-| AC3 | Empty, invalid-urgency, title-over-80, and message-over-300 inputs fail before process launch. |
+| AC3 | Empty, invalid-urgency, title-over-40, and message-over-200 inputs fail before process launch. |
 | AC4 | One synthetic known-sensitive fixture is rejected and instructions prohibit all sensitive/raw untrusted content without claiming complete detection. |
 | AC5 | User text is one process argument; shell execution, interpolation, payload logging, and `eval` are absent. |
 | AC6 | Missing `say` and non-zero exit return distinguishable safe failures with no payload echo. |
 | AC7 | Critical automated tests pass without producing audio. |
-| AC8 | The approved PR-review message is heard on the demo machine and Codex waits for human confirmation. |
+| AC8 | The approved PR-review message is heard on the demo machine and Codex waits for explicit listener confirmation through the agreed acknowledgement mechanism. |
 | AC9 | Install, test, limitation, and demo steps are reproducible without code edits. |
 | AC10 | The workflow log spans brief, planning, implementation/review, testing, and demo preparation with one substantive human correction. |
 | AC11 | The final presentation connects a human-approved decision to implementation and test evidence. |

@@ -18,22 +18,23 @@ Testing is capped at 45 minutes of implementation effort plus 30 minutes of inte
 | ID | Behavior | Expected result | Covers |
 | --- | --- | --- | --- |
 | T01 | Valid title/message; urgency omitted | Composes title + message, defaults to `normal`, and maps exit 0 to `spoken` | AC2 |
-| T02 | Empty fields, invalid urgency, title 81, or message 301 characters | `INVALID_INPUT`; process is not called | AC3 |
+| T02 | Empty fields, invalid urgency, title 41, or message 201 characters | `INVALID_INPUT`; process is not called | AC3 |
 | T03 | One control-character and known-sensitive fixture set | Safe rejection with no process call or payload echo | AC4 |
 | T04 | Quotes, semicolons, `$()`, and other benign metacharacters | One literal process argument; fixed executable; shell disabled | AC5 |
 | T05 | Missing `say` and non-zero exit | Distinct `TTS_UNAVAILABLE` / `TTS_FAILED`; no false success | AC6 |
 | T06 | Any failure result | Contains no title, message, or composed speech | AC4–AC6 |
 | T07 | MCP contract | Exactly one `notify_user` tool with the agreed input/result shape | AC1–AC2 |
 
-If time remains before 1:45, add exact 80/300 boundary success cases. Timeout, cancellation, duplicate suppression, and broad pattern tests are deferred.
+If time remains before 1:45, add exact 40/200 boundary success cases. Timeout, cancellation, duplicate suppression, and broad pattern tests are deferred.
 
 ## P0 Manual Checks
 
 - [ ] **V01 — Discovery:** Follow documented setup and verify Codex exposes exactly `notify_user`, or record use of the direct-MCP fallback.
 - [ ] **V02 — Real happy path:** Speak the approved PR-review request, receive `spoken`, and confirm Codex waits.
-- [ ] **V03 — No-audio rejection:** Submit a 301-character message and one synthetic sensitive fixture; both fail before speech.
+- [ ] **V03 — No-audio rejection:** Submit a 201-character message and one synthetic sensitive fixture; both fail before speech.
 - [ ] **V04 — Unavailable TTS:** Use a safe controlled test path and verify the structured unavailable result without altering system files.
 - [ ] **V05 — Repeatability:** A teammate starts a clean/new session and repeats V02 without editing code.
+- [ ] **Acknowledgement:** After V02, confirm Codex remains waiting until the listener responds through the agreed mechanism.
 
 ## Approved Test Data
 
@@ -66,7 +67,7 @@ Do not place spoken payloads in diagnostic logs. Screenshots and recordings may 
 - Exit code 0 proves `say` completed, not that the user heard it.
 - Pattern matching cannot identify every secret or private fact.
 - macOS/audio setup is required; voice does not replace visible text.
-- Timeout, cancellation, acknowledgement, history, retry, and duplicate suppression are deferred.
+- Timeout, cancellation, plugin-managed acknowledgement channels, history, retry, and duplicate suppression are deferred.
 
 ## Review Questions
 

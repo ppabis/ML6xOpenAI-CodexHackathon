@@ -56,7 +56,7 @@ Say that sentence only if V01, V02, and V05 passed.
 
 Demonstrate two concise cases:
 
-1. Submit a 301-character message and show validation rejects it before audio.
+1. Submit a 201-character message and show validation rejects it before audio.
 2. Show the controlled unavailable-TTS case returning `TTS_UNAVAILABLE`, or show its executed automated evidence if a safe live simulation is not available.
 
 Then point to the rule prohibiting secrets, private code, personal data, and raw untrusted output. Explain that deterministic checks are defense in depth, not complete secret detection.
