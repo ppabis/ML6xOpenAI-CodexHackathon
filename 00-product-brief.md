@@ -128,17 +128,14 @@ Confirmed:
 - Limit titles to 40 characters and messages to 200 characters.
 - Support `low`, `normal`, and `high` with the meanings above; urgency does not affect system volume.
 - Speak `<title>. <message>`.
+- Treat `spoken` as speech-process completion, then require an explicit typed listener reply in the current Codex task before continuing.
+- Allow `low` only for justified informational attention, never routine automatic status chatter.
+- Defer timeout/cancellation, cooldown, history, plugin-managed acknowledgement channels, cross-platform support, and other nice-to-haves.
+- Use the synthetic PR-review message and fake password fixture documented in the test plan.
 
-Pending before implementation:
+Pending before the final demo:
 
-- Define listener acknowledgement. The recommended three-hour option is for the plugin to return after `say` exits and for Codex to wait for an explicit typed reply in the existing task. Voice recognition, buttons, or another acknowledgement channel require new scope.
-- Clarify whether `low` may announce non-blocking information. The current safety rule permits voice only when user attention is justified; unrestricted informational speech would increase notification fatigue.
-- Explicitly confirm the deferred-feature cut list so implementation does not expand.
-
-Pending before validation:
-
-- Approve the final synthetic PR-review demo message.
-- Approve one fake sensitive-content fixture and the privacy review.
+- A human teammate confirms new-task discovery, audible output, typed acknowledgement behavior, and the final privacy/demo review.
 
 ## Codex Support Requested
 

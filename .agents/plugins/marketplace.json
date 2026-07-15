@@ -1,0 +1,20 @@
+{
+  "name": "voice-notification-local",
+  "interface": {
+    "displayName": "Voice Notification Local"
+  },
+  "plugins": [
+    {
+      "name": "voice-notification",
+      "source": {
+        "source": "local",
+        "path": "./plugins/voice-notification"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

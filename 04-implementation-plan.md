@@ -25,9 +25,9 @@ At 3:00, the three-person team can demonstrate a real local Codex-to-speaker req
 
 ### Person 1
 
-1. Keep Person 1–3 labels and confirm the acknowledgement mechanism; the 40/200 limits, urgency meanings, no-volume rule, and spoken format are already approved.
-2. Mark all deferred features out of scope before coding begins.
-3. Schedule approval of the synthetic PR-review message and known-sensitive fixture no later than 1:30, before manual validation.
+1. Keep Person 1–3 labels and use typed acknowledgement after `spoken`; the 40/200 limits, urgency meanings, no-volume rule, and spoken format are approved.
+2. Keep all deferred features out of scope.
+3. Use the documented synthetic PR-review message and fake password fixture for validation.
 
 ### Persons 2 and 3
 

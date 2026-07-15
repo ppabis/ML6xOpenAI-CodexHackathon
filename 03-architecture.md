@@ -124,7 +124,7 @@ Final MCP configuration fields must be generated or verified against the install
 
 ## Decision Owners
 
-- Product/Quality/Demo Lead confirms how listener acknowledgement is represented after `spoken`; typed confirmation in the Codex task is the recommended three-hour option.
+- Listener acknowledgement is represented by a typed confirmation in the current Codex task after `spoken`; plugin-managed acknowledgement channels are deferred.
 - Tech Lead verifies manifest/MCP schemas and package versions during scaffolding.
 - Product/Quality/Demo Lead approves sensitive fixtures, failure evidence, and demo wording.
 

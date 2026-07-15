@@ -2,7 +2,7 @@
 
 ## Status and Time Budget
 
-**Status: planned; nothing passes until its command and result are recorded.**
+**Status: implementation validation executed on 2026-07-15. Human listener acknowledgement remains pending.**
 
 Testing is capped at 45 minutes of implementation effort plus 30 minutes of integration/manual validation. Person 3 owns automated tests; Person 1 owns manual acceptance and evidence. The goal is critical confidence for **Best Working Product** and honest review evidence for **Best AI-Native Workflow**, not exhaustive coverage.
 
@@ -29,12 +29,12 @@ If time remains before 1:45, add exact 40/200 boundary success cases. Timeout, c
 
 ## P0 Manual Checks
 
-- [ ] **V01 — Discovery:** Follow documented setup and verify Codex exposes exactly `notify_user`, or record use of the direct-MCP fallback.
-- [ ] **V02 — Real happy path:** Speak the approved PR-review request, receive `spoken`, and confirm Codex waits.
-- [ ] **V03 — No-audio rejection:** Submit a 201-character message and one synthetic sensitive fixture; both fail before speech.
-- [ ] **V04 — Unavailable TTS:** Use a safe controlled test path and verify the structured unavailable result without altering system files.
-- [ ] **V05 — Repeatability:** A teammate starts a clean/new session and repeats V02 without editing code.
-- [ ] **Acknowledgement:** After V02, confirm Codex remains waiting until the listener responds through the agreed mechanism.
+- [x] **V01 — Discovery:** Repo marketplace installed; Codex lists the plugin as installed/enabled; the installed cached MCP server returns exactly `notify_user`; a fresh Codex session discovered and started `voice-notification/notify_user`.
+- [x] **V02 — Real process path:** A full installed-cache MCP `tools/call` ran the approved synthetic PR-review request and returned `spoken` after `/usr/bin/say` exited 0. A fresh noninteractive Codex call reached the tool but was cancelled at its user-approval gate. Interactive approval and listener audibility remain human checks.
+- [x] **V03 — No-audio rejection:** 201- and 301-character messages return `INVALID_INPUT`; the synthetic password fixture returns `SENSITIVE_CONTENT`; no speech runner is called.
+- [x] **V04 — Unavailable TTS:** An injected ENOENT-equivalent runner returns payload-free `TTS_UNAVAILABLE` without changing system files or production configuration.
+- [ ] **V05 — Human repeatability:** An independent clean-room agent reproduced prerequisites, installation status, 17 tests, and installed-cache discovery without edits. A human teammate must still open a new task, confirm discovery, and repeat V02.
+- [ ] **Acknowledgement:** The plugin skill and MCP instructions require Codex to wait for an explicit typed reply after `spoken`. Confirm this behavior in a new Codex task with a human listener.
 
 ## Approved Test Data
 
@@ -55,10 +55,23 @@ If time remains before 1:45, add exact 40/200 boundary success cases. Timeout, c
 
 Do not place spoken payloads in diagnostic logs. Screenshots and recordings may contain only approved synthetic data.
 
+## Executed Results — 2026-07-15
+
+- Environment: macOS, Node.js `v24.10.0`, npm `11.6.0`, Codex CLI `0.144.4`, `/usr/bin/say` present.
+- Automated: `npm test` passed 17/17; tests produced no audio.
+- Plugin manifest: Plugin Creator validation passed.
+- Bundled skill: skill validation passed.
+- Installation: `voice-notification@voice-notification-local` version `0.1.0+codex.20260715094339` reported `installed, enabled`.
+- MCP discovery: installed cached server initialized and listed exactly `notify_user`.
+- Real tool path: installed cached MCP call returned `{ ok: true, status: "spoken", urgency: "normal" }` after `say` completed.
+- Fresh Codex session: discovered and attempted `voice-notification/notify_user`; noninteractive mode cancelled at the mandatory approval step, so the interactive demo must approve the call.
+- Rejections: 201 and 301 characters, synthetic sensitive content, and unavailable TTS returned distinct safe codes without echoing inputs.
+- Independent rehearsal: clean-room agent repeated prerequisites, tests, plugin status, and cached discovery without modifying source.
+
 ## 2:15 Exit Gate
 
-- T01–T07 pass without real audio, or the reduced set T01, T02, T04, and T05 passes with omitted tests documented.
-- V01–V03 and V05 pass on the demo machine; V04 has executed evidence or is disclosed as a test-only limitation.
+- T01–T07 pass without real audio. Executed suite: 17/17 passing.
+- V01–V04 have technical evidence. V05 and typed listener acknowledgement remain human checks.
 - AC1–AC12 have evidence or a named limitation.
 - Person 2 reviews shell/process safety; Person 1 reviews privacy, accessibility, and demo claims.
 
@@ -68,6 +81,7 @@ Do not place spoken payloads in diagnostic logs. Screenshots and recordings may 
 - Pattern matching cannot identify every secret or private fact.
 - macOS/audio setup is required; voice does not replace visible text.
 - Timeout, cancellation, plugin-managed acknowledgement channels, history, retry, and duplicate suppression are deferred.
+- The tool may require interactive approval; unattended notification requires a surface where the user has safely pre-approved this specific tool.
 
 ## Review Questions
 

@@ -4,26 +4,26 @@
 
 Codex tasks can remain blocked because human requests are easy to miss away from the window. In three hours, the team will prove one safe macOS flow: Codex calls `notify_user`, a short request is spoken through `say`, a structured result returns, and Codex waits for the human.
 
-Use these confirmed decisions and implementation defaults; only acknowledgement remains open at 0:15:
+Use these confirmed decisions and implementation defaults:
 
 - Node.js 20+ ESM JavaScript, local STDIO MCP, and `/usr/bin/say`;
 - title limit 40 characters and message limit 200 characters;
 - urgency `low` for informational attention messages, `normal` for PR reviews and ordinary requests, and `high` for critical/incidents; default `normal`, with no volume effect;
 - speak `<title>. <message>` and wait for `say` to exit;
-- after speech, Codex waits for listener acknowledgement; the mechanism is pending, with an explicit typed reply in the Codex task recommended for the three-hour MVP;
+- after speech, Codex waits for an explicit typed listener acknowledgement in the current task;
 - no automatic retry, persistence, plugin-managed acknowledgement channel, or cooldown;
 - a small known-sensitive-pattern check supplements, but does not replace, caller judgment.
 
 ## Must-Have Tasks
 
-- [ ] **M1 — Lock the contract (0:00–0:15):** retain Person 1–3 labels, choose the listener-acknowledgement mechanism, and confirm the deferred-feature cut list.
-- [ ] **M2 — Prove plugin discovery (0:15–1:00):** scaffold manifest, MCP configuration, skill instructions, marketplace entry, and one fixed real announcement.
-- [ ] **M3 — Implement safe notification (0:15–1:15):** validate inputs, compose speech, spawn fixed `say` without a shell, and return success/validation/unavailable/execution results.
-- [ ] **M4 — Integrate dynamic tool (1:00–1:30):** connect `notify_user(title, message, urgency?)` to M3 and verify the approved message end to end.
-- [ ] **M5 — Add critical automated tests (1:00–1:45):** cover valid input, length/urgency boundaries, one known-sensitive fixture, literal metacharacters, missing `say`, and non-zero exit without playing audio.
-- [ ] **M6 — Validate and document (1:30–2:15):** run build-free checks/tests, live audio, over-limit rejection, install steps, privacy limits, and one controlled unavailable-TTS result.
-- [ ] **M7 — Capture AI-native evidence (throughout):** log material Codex prompts, human decisions, and at least one changed/rejected output with product impact.
-- [ ] **M8 — Freeze and rehearse (2:15–3:00):** finish PR evidence, prepare the 3–5 minute story, and rehearse the verified sequence twice.
+- [x] **M1 — Lock the contract (0:00–0:15):** retain Person 1–3 labels, use typed listener acknowledgement, and confirm the deferred-feature cut list.
+- [x] **M2 — Prove plugin discovery (0:15–1:00):** scaffold manifest, MCP configuration, skill instructions, marketplace entry, and one fixed real announcement.
+- [x] **M3 — Implement safe notification (0:15–1:15):** validate inputs, compose speech, spawn fixed `say` without a shell, and return success/validation/unavailable/execution results.
+- [x] **M4 — Integrate dynamic tool (1:00–1:30):** connect `notify_user(title, message, urgency?)` to M3 and verify the approved message end to end.
+- [x] **M5 — Add critical automated tests (1:00–1:45):** cover valid input, length/urgency boundaries, one known-sensitive fixture, literal metacharacters, missing `say`, and non-zero exit without playing audio.
+- [x] **M6 — Validate and document (1:30–2:15):** run build-free checks/tests, live audio, over-limit rejection, install steps, privacy limits, and one controlled unavailable-TTS result.
+- [x] **M7 — Capture AI-native evidence (throughout):** log material Codex prompts, human decisions, and at least one changed/rejected output with product impact.
+- [ ] **M8 — Freeze and rehearse (2:15–3:00):** code feature freeze and PR evidence are complete; interactive approval/audibility, human repeatability, typed acknowledgement, and two rehearsals remain.
 
 ## Explicitly Deferred
 
