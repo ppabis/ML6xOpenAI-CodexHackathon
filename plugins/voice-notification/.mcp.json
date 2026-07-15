@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "voice-notification": {
+      "command": "node",
+      "args": [
+        "./src/index.js"
+      ],
+      "cwd": "."
+    }
+  }
+}
