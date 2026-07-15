@@ -25,6 +25,23 @@ echo "Registering the portable marketplace..."
 codex plugin marketplace add "$ROOT"
 codex plugin add "voice-notification@$MARKETPLACE_NAME"
 
+PLUGIN_VERSION=$(node -e \
+  'const fs=require("node:fs"); const path=process.argv[1]; process.stdout.write(JSON.parse(fs.readFileSync(path,"utf8")).version)' \
+  "$PLUGIN_ROOT/.codex-plugin/plugin.json")
+CODEX_ROOT=${CODEX_HOME:-$(node -e 'process.stdout.write(require("node:os").homedir()+"/.codex")')}
+INSTALLED_ROOT="$CODEX_ROOT/plugins/cache/$MARKETPLACE_NAME/voice-notification/$PLUGIN_VERSION"
+
+if [ -f "$PLUGIN_ROOT/.env" ]; then
+  if [ ! -d "$INSTALLED_ROOT" ]; then
+    echo "Installed plugin directory was not found: $INSTALLED_ROOT" >&2
+    exit 1
+  fi
+  umask 077
+  cp "$PLUGIN_ROOT/.env" "$INSTALLED_ROOT/.env"
+  chmod 600 "$INSTALLED_ROOT/.env"
+  echo "Copied plugin-local environment to the installed private plugin directory."
+fi
+
 echo
 echo "Installed voice-notification from $ROOT"
 echo "Restart Codex and open a new task in any project."
