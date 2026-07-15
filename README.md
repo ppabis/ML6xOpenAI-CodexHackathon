@@ -4,6 +4,23 @@
 
 **AI-Native Way of Working: Using Codex as a Partner at Every Step**
 
+## Current Project: Voice Notification
+
+This branch implements a local macOS Codex plugin that announces short, non-sensitive requests when a task needs human attention. See [plugins/voice-notification/README.md](./plugins/voice-notification/README.md) for installation, tests, safety limits, and the demo flow.
+
+## Portable Plugin Bundle
+
+Create a standalone archive that can be installed independently of this
+repository or any target project:
+
+```bash
+./scripts/package-voice-notification.sh
+```
+
+The command creates `dist/voice-notification-local.tar.gz`. Extract it anywhere,
+run its `install.sh`, restart Codex, and open a new task in the project where
+you want to use `notify_user`.
+
 This starter helps a team go from a rough idea to a credible demo within one hackathon day. It is designed for technical teams who want to use Codex across the full delivery lifecycle, not just for code generation.
 
 ## Why This Repo Exists

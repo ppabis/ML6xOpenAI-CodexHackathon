@@ -1,72 +1,71 @@
 # 01 Team Roles
 
-## Team Members
+## Three-Person Team Model
 
-- Person 1:
-- Person 2:
-- Person 3:
-- Person 4:
+The team has three hours from planning to demo readiness. Each person owns one parallel workstream; documentation and evidence are produced alongside implementation, not afterward.
 
-## Delivery Lead / Product Owner
+| Role | Owner | Responsibilities | Three-hour deliverables |
+| --- | --- | --- | --- |
+| Product, Quality, and Demo Lead | Person 1 | Lock scope and wording, maintain acceptance evidence, run manual validation, update the workflow log, and prepare/rehearse the presentation. | Confirmed contract, test evidence, PR summary, demo script |
+| Tech Lead and Plugin Integrator | Person 2 | Scaffold the manifest/marketplace/MCP server, prove Codex discovery, integrate the tool, and own the demo machine setup. | Installable plugin and real Codex-to-tool path |
+| TTS and Safety Developer | Person 3 | Implement validation, shell-free `say` execution, structured results, and critical automated tests. | Safe `notify_user` behavior and test suite |
 
-- Owner:
-- Responsibilities:
-  - keep scope tight
-  - make product tradeoffs
-  - keep artifacts updated
+Replace `Person 1`–`Person 3` with names immediately. Codex assists all workstreams but is never the accountable owner.
 
-## Tech Lead / Solution Architect
+## Decision and Review Boundaries
 
-- Owner:
-- Responsibilities:
-  - choose stack
-  - define architecture
-  - remove implementation blockers
+- **Person 1 decides:** acknowledgement behavior, demo wording, scope cuts, test sufficiency, and which claims are presentation-ready.
+- **Person 2 decides:** plugin/MCP layout, installation commands, and integration fixes.
+- **Person 3 decides:** validation and process-adapter implementation, subject to Person 2's security review.
+- **Cross-review:** Person 2 reviews shell/process safety; Person 3 reviews MCP integration assumptions; Person 1 validates observable behavior and privacy language.
+- **Stop-ship issues:** shell interpolation, sensitive demo data, false success, no repeatable happy path, or claims without evidence.
 
-## AI Engineer / Developer
+## Parallel Workstreams
 
-- Owner:
-- Responsibilities:
-  - generate and integrate implementation work
-  - keep the code path simple
-  - surface technical risks quickly
+### A — Product, Evidence, and Presentation (Person 1)
 
-## AI Engineer / Quality Reviewer
+- **0:00–0:15:** confirm acknowledgement behavior and the three-hour scope; the 40/200 limits and urgency meanings are already confirmed.
+- Approve test fixtures and the blocking PR-review scenario by **1:30**, before manual validation.
+- Keep `06-pr-summary.md` and `08-codex-workflow-log.md current at each gate.
+- From **1:30**, prepare slides/talking points and the demo sequence while validation continues.
+- At **2:15**, lead feature freeze, manual tests, and two short rehearsals.
 
-- Owner:
-- Responsibilities:
-  - define validation
-  - review outputs critically
-  - capture quality evidence and limitations
+### B — Plugin and Codex Integration (Person 2)
 
-## Demo / Story Owner
+- Scaffold `.codex-plugin/plugin.json`, `.mcp.json`, the skill, and repo marketplace entry.
+- Expose exactly one local STDIO MCP tool.
+- Prove Codex discovery and one fixed real announcement by **1:00**.
+- Integrate Person 3's validated handler, document install steps, and own the live demo setup.
 
-- Owner:
-- Responsibilities:
-  - shape the narrative
-  - prepare demo flow
-  - capture AI-native workflow moments
+### C — Core TTS, Safety, and Tests (Person 3)
 
-## How The Team Will Work In Parallel
+- Implement bounded input validation and safe result codes.
+- Spawn fixed `/usr/bin/say` with an argument array and shell disabled.
+- Add only critical automated tests: happy path, boundaries, known-sensitive fixture, literal metacharacters, and unavailable/non-zero speech.
+- Deliver the handler interface to Person 2 by **1:00** and finish tests by **1:45**.
 
-- Worktsream A:
-- Workstream B:
-- Workstream C:
-- Shared checkpoints:
+## Hard Checkpoints
 
-## How Codex Will Support Each Role
+| Time | Required outcome | If missing |
+| --- | --- | --- |
+| 0:15 | Acknowledgement contract, stack, and scope cuts locked; role labels remain Person 1–3 | Use the recommended typed-reply acknowledgement; no further option analysis. |
+| 1:00 | Codex discovers the tool and a fixed real announcement plays | Switch immediately to direct project-scoped MCP configuration; disclose plugin-packaging gap. |
+| 1:30 | Validated dynamic message works end to end | Drop sensitive-pattern expansion and all nonessential error variants. |
+| 2:15 | Feature freeze; critical tests and live happy path pass | Demonstrate the strongest verified slice; no new features. |
+| 2:45 | PR evidence and demo narrative complete | Cut secondary failure demo; preserve happy path, one validation failure, and workflow evidence. |
+| 3:00 | Demo rehearsed and ready | Stop edits and use the last verified sequence. |
 
-- Product Owner: scoping, decision framing, summary writing
-- Tech Lead: stack comparison, architecture options, tradeoffs
-- Developer: implementation plans, code generation, refactors
-- Quality Reviewer: test cases, review checklists, PR summaries
-- Demo Owner: story flow, script, evidence, rehearsal notes
+## Award Evidence Ownership
 
-## Codex Prompt Starter
+| Evidence | Owner | Minimum proof |
+| --- | --- | --- |
+| Best Working Product | Persons 2 and 3 | Real install/discovery, audible success, structured result, critical automated tests, one validation failure |
+| Best AI-Native Workflow | Person 1 | Artifacts `00`–`08`, lifecycle log, one human correction to Codex output, and decision-to-product trace |
+| Presentation credibility | Person 1 with team review | Claims match `06-pr-summary.md`; limitations are explicit |
 
-```text
-We are a 3-4 person hackathon team. Based on the idea below, suggest a practical role split, parallel workstreams, and clear handoffs. Keep it feasible for one day.
+## Codex Usage Pattern
 
-Idea:
-[paste product brief here]
-```
+- Person 1 uses Codex to compress decisions, maintain evidence, and challenge claims.
+- Person 2 uses Codex for plugin scaffolding and integration diagnostics.
+- Person 3 uses Codex for small implementation units, adversarial tests, and security review.
+- Every accepted, changed, or rejected material Codex output is logged briefly at the next checkpoint.

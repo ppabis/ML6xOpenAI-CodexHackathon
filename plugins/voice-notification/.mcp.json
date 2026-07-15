@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "voice-notification": {
+      "command": "node",
+      "args": [
+        "./src/index.js"
+      ],
+      "cwd": ".",
+      "env_vars": [
+        "GROQ_API_KEY"
+      ]
+    }
+  }
+}
