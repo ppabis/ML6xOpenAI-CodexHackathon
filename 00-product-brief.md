@@ -2,71 +2,118 @@
 
 ## Product Idea
 
-- Working name:
-- One-sentence pitch:
+- **Working name:** Codex Voice Notification Plugin
+- **One-sentence pitch:** A local Codex plugin that safely speaks short, actionable requests when a task is blocked on human input.
 
 ## Problem Statement
 
-- What problem are we solving?
-- Why does it matter today?
+Codex tasks sometimes pause for human review, approval, credentials, device access, or real-world verification. When the user is away from the Codex window, these requests can go unnoticed and long-running work remains blocked.
+
+Each notification should make clear:
+
+- what needs attention and what action to take;
+- which Codex task is waiting;
+- how urgent the request is; and
+- who the request is for.
 
 ## Target User
 
-- Primary user:
-- Context of use:
-- Current pain:
+- **Primary:** Developers running long-lived or autonomous Codex tasks who frequently leave the Codex window.
+- **Secondary:** Users managing several concurrent tasks and teams testing human-in-the-loop agent workflows.
+- **Later:** Any local agent that needs real-world human intervention.
 
 ## Value Proposition
 
-- What becomes easier, faster, safer, or clearer?
-- What is the visible outcome in the demo?
+The plugin shortens unnoticed wait time without requiring cloud messaging or another device. A user hears a concise request through the current audio output, while Codex receives a structured result and remains responsible for waiting for the user's response.
+
+## Smallest Useful Version
+
+Provide one callable action with an interface equivalent to:
+
+```text
+notify_user(
+  title: "PR review needed",
+  message: "Please review pull request 42 and tell me whether I should merge it.",
+  urgency: "normal"
+)
+```
+
+On macOS, the action validates the request, invokes the built-in `say` command without a shell, plays through the default audio output, and returns a structured success or error response. `urgency` communicates context only; version one does not change system volume or interrupt other audio.
 
 ## In Scope For Today
 
-- Must-have capability 1:
-- Must-have capability 2:
-- Must-have capability 3:
+- Scaffold a local Codex plugin with a valid manifest and concise usage instructions.
+- Expose one action accepting a title, message, and optional bounded urgency value.
+- Use macOS local text-to-speech with no external service dependency.
+- Enforce length limits and reject empty, unsafe, or intentionally sensitive content.
+- Pass user input as process arguments rather than interpolated shell commands.
+- Return structured success and failure results.
+- Add small automated validation/process tests plus a manual audio test.
+- Document installation, limitations, and a repeatable demo workflow.
+
+## Safety and Invocation Rules
+
+- Speak only when a task is genuinely blocked and the user may not see the screen.
+- Summarize trusted task context; never speak raw tool output or untrusted content.
+- Never include secrets, credentials, tokens, private code, or sensitive personal data.
+- Keep announcements brief, actionable, and attributable to a task.
+- Avoid repeated announcements; one call does not authorize automatic retries.
+- Do not claim the requested human action occurred. Wait for explicit user confirmation.
+
+Content checks reduce accidental disclosure but cannot reliably detect every secret. The caller and user-facing instructions remain the primary privacy boundary.
 
 ## Out Of Scope
 
-- Not building:
-- Not integrating:
-- Not polishing:
+- Speech recognition, voice replies, or two-way conversation.
+- Push notifications, SMS, email, calls, cross-device delivery, or cloud TTS.
+- Windows or Linux support in the first version.
+- Voice cloning, custom voices, scheduling, or notification history.
+- Changing volume or interrupting music and calls.
+- Performing the requested real-world action on the user's behalf.
 
-## Assumptions
+## Assumptions and Constraints
 
-- Assumption 1:
-- Assumption 2:
-- Assumption 3:
-
-## Constraints
-
-- Time:
-- Team size:
-- Data/API constraints:
-- Environment constraints:
+- **Time:** One hackathon day; optimize for a reliable macOS demo.
+- **Environment:** macOS with `say` available and a working default audio device.
+- **Dependencies:** Prefer the standard library and existing Codex plugin tooling.
+- **Privacy:** Spoken audio can be overheard; sensitive material must be excluded.
+- **Accessibility:** Voice complements, but does not replace, the visible Codex request.
+- **Team:** Work should split cleanly across plugin scaffolding, implementation, tests, and documentation/demo.
 
 ## Expected Demo
 
-- Best-case demo:
-- Minimum acceptable demo:
+A simulated Codex task reaches a blocking point and announces:
 
-## Feasibility Check
+> Aanchal, pull request 42 is ready. Please review the authentication changes and return to the Codex task when you are finished.
 
-- Is there a small end-to-end slice we can finish today?
-- What is the highest setup risk?
-- What can we cut if we are behind by midday?
+The message plays through the active speakers or headphones. The action reports success, and Codex waits for the user's response.
 
-## Codex Prompt Starter
+The demo also proves:
 
-```text
-Help us refine this hackathon idea into a one-day scope. Challenge anything too ambitious and produce:
-1. a sharper problem statement
-2. a target user definition
-3. a must-have vs out-of-scope split
-4. a realistic demo outcome
-5. a short feasibility check
+- an ordinary announcement succeeds;
+- an excessively long message is rejected with a clear validation error;
+- unavailable text-to-speech produces a clear structured error; and
+- invocation guidance prohibits intentionally sensitive spoken content.
 
-Current idea:
-[paste idea here]
-```
+## Success Criteria
+
+- A fresh local installation can complete the happy path using documented steps.
+- Invalid input never reaches the speech process.
+- No user-controlled text is evaluated by a shell.
+- Success and failure are distinguishable by Codex.
+- The demo can be repeated without editing code.
+
+## Feasibility and Scope Cuts
+
+The smallest end-to-end slice is manifest + one validated action + `say` + structured results + manual demo. The highest risks are Codex plugin integration and reliable audio testing. If behind by midday, cut automated process mocking and advanced sensitive-pattern checks before cutting length validation, safe process execution, structured errors, or the manual demo.
+
+## Open Decisions
+
+- Final maximum title and message lengths.
+- Supported urgency values (`low`, `normal`, `high`) and whether they affect spoken wording.
+- Whether the action blocks until speech completes or returns after successful launch.
+- Minimum cooldown behavior for accidental repeated calls.
+
+## Codex Support Requested
+
+Codex should help define the interface and invocation rules; scaffold the plugin; implement safe local TTS; create unit and manual tests for success, failure, cancellation, and repetition; review privacy, security, accessibility, and notification-fatigue risks; write setup and demo documentation; and outline later Windows, Linux, acknowledgement, and richer-channel support.
