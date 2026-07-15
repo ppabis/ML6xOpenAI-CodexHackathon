@@ -1,7 +1,5 @@
 import { unlink } from "node:fs/promises";
 
-import { classifyConfirmation } from "./confirmation.js";
-
 export function createVoiceConfirmer({
   captureUtterance,
   transcribeAudio,
@@ -11,7 +9,7 @@ export function createVoiceConfirmer({
     typeof captureUtterance !== "function" ||
     typeof transcribeAudio !== "function"
   ) {
-    throw new TypeError("Voice confirmation dependencies must be functions");
+    throw new TypeError("Voice response dependencies must be functions");
   }
 
   return async function confirmByVoice() {
@@ -23,7 +21,13 @@ export function createVoiceConfirmer({
       }
       audioPath = capture.audioPath;
       const transcript = await transcribeAudio(audioPath);
-      return classifyConfirmation(transcript);
+      if (
+        typeof transcript !== "string" ||
+        !/[\p{L}\p{N}]/u.test(transcript)
+      ) {
+        return "unavailable";
+      }
+      return { kind: "responded", message: transcript.trim() };
     } catch {
       return "unavailable";
     } finally {

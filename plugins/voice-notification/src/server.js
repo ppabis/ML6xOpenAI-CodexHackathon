@@ -7,7 +7,7 @@ import {
 const NOTIFY_USER_TOOL = {
   name: "notify_user",
   description:
-    "Speak a short, trusted notification and wait for text or voice confirmation before blocked work continues.",
+    "Speak a short, trusted notification and wait for typed input or one bounded, transcribed voice response.",
   inputSchema: {
     type: "object",
     properties: {
@@ -33,7 +33,7 @@ const NOTIFY_USER_TOOL = {
         enum: ["text", "voice"],
         default: "text",
         description:
-          "Wait for typed confirmation or record a bounded voice confirmation.",
+          "Wait for typed input or record and transcribe one bounded spoken response.",
       },
     },
     required: ["title", "message"],
@@ -54,15 +54,13 @@ const NOTIFY_USER_TOOL = {
       {
         properties: {
           ok: { const: true },
-          status: {
-            enum: ["awaiting_confirmation", "confirmed", "declined"],
-          },
+          status: { const: "awaiting_confirmation" },
           urgency: { enum: ["low", "normal", "high"] },
           confirmation: {
             type: "object",
             properties: {
-              method: { enum: ["text", "voice"] },
-              state: { enum: ["pending", "confirmed", "declined"] },
+              method: { const: "text" },
+              state: { const: "pending" },
               fallbackFrom: { const: "voice" },
             },
             required: ["method", "state"],
@@ -70,6 +68,24 @@ const NOTIFY_USER_TOOL = {
           },
         },
         required: ["ok", "status", "urgency", "confirmation"],
+        additionalProperties: false,
+      },
+      {
+        properties: {
+          ok: { const: true },
+          status: { const: "responded" },
+          urgency: { enum: ["low", "normal", "high"] },
+          response: {
+            type: "object",
+            properties: {
+              method: { const: "voice" },
+              message: { type: "string", minLength: 1 },
+            },
+            required: ["method", "message"],
+            additionalProperties: false,
+          },
+        },
+        required: ["ok", "status", "urgency", "response"],
         additionalProperties: false,
       },
       {

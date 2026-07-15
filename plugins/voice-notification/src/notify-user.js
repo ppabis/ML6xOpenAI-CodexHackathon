@@ -1,4 +1,4 @@
-import { runSay } from "./speech.js";
+import { runSpeech } from "./speech.js";
 import { validateNotification } from "./validation.js";
 
 const speechFailure = (code) => ({
@@ -11,7 +11,7 @@ const speechFailure = (code) => ({
   retryable: false,
 });
 
-export async function notifyUser(input, { speechRunner = runSay } = {}) {
+export async function notifyUser(input, { speechRunner = runSpeech } = {}) {
   const validation = validateNotification(input);
   if (!validation.ok) return validation;
 

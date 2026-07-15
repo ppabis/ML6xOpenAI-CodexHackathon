@@ -54,6 +54,12 @@ test("advertises exactly notify_user with the bounded input schema", async (t) =
     "voice",
   ]);
   assert.equal(tools[0].inputSchema.properties.confirmationMode.default, "text");
+  const voiceResponse = tools[0].outputSchema.oneOf.find(
+    (schema) => schema.properties?.status?.const === "responded",
+  );
+  assert.equal(voiceResponse.properties.response.properties.method.const, "voice");
+  assert.equal(voiceResponse.properties.response.properties.message.type, "string");
+  assert.equal(voiceResponse.properties.response.properties.message.minLength, 1);
 });
 
 test("forwards valid arguments unchanged and returns structured success", async (t) => {
