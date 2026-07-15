@@ -73,6 +73,13 @@ Stage | Prompt/task | Codex output | Human disposition | Reason | Product impact
 - **Evidence:** `plugins/voice-notification/`, `.agents/plugins/marketplace.json`, `05-test-plan.md`, and `06-pr-summary.md`.
 - **Freeze:** Code feature freeze declared on 2026-07-15 after technical P0 validation. Only human demo verification and documentation corrections remain.
 
+### E07 — Three-person integration and runnable verification
+
+- **Human task:** Merge the remote implementation contributions into the shared voice-notification branch and make the combined result runnable immediately.
+- **Codex output:** Merged commits `6338139` and `1957296`, reconciled independently created plugin files to the agreed 40/200 contract, retained the useful `node_modules/` ignore rule, and removed the incompatible SDK-only alternate entry point and stale lockfile.
+- **Product impact:** The unified dependency-free plugin passes 17 tests and plugin/skill validation. Version `0.1.0+codex.20260715095321` is installed and enabled; its cached MCP server completed initialization, listed exactly `notify_user`, played a real test announcement, and returned `spoken`.
+- **Remaining human gate:** Confirm the announcement was audible through the intended output device and respond in the Codex task; repeat the demo from a fresh interactive task.
+
 ## Human Decisions Confirmed So Far
 
 | Decision | Human rationale / source | Effect |

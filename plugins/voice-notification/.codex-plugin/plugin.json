@@ -1,6 +1,6 @@
 {
   "name": "voice-notification",
-  "version": "0.1.0+codex.20260715094339",
+  "version": "0.1.0+codex.20260715095321",
   "description": "Safely announce actionable Codex requests using macOS speech.",
   "author": {
     "name": "Codex Hackathon Team"

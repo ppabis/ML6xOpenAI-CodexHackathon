@@ -61,9 +61,9 @@ Do not place spoken payloads in diagnostic logs. Screenshots and recordings may 
 - Automated: `npm test` passed 17/17; tests produced no audio.
 - Plugin manifest: Plugin Creator validation passed.
 - Bundled skill: skill validation passed.
-- Installation: `voice-notification@voice-notification-local` version `0.1.0+codex.20260715094339` reported `installed, enabled`.
+- Installation: after merging `feature/add-voice-notification` and `feature/implementation`, `voice-notification@voice-notification-local` version `0.1.0+codex.20260715095321` reported `installed, enabled`.
 - MCP discovery: installed cached server initialized and listed exactly `notify_user`.
-- Real tool path: installed cached MCP call returned `{ ok: true, status: "spoken", urgency: "normal" }` after `say` completed.
+- Real tool path: the refreshed installed-cache MCP call announced the merged plugin test and returned `{ ok: true, status: "spoken", urgency: "normal" }` after `say` completed.
 - Fresh Codex session: discovered and attempted `voice-notification/notify_user`; noninteractive mode cancelled at the mandatory approval step, so the interactive demo must approve the call.
 - Rejections: 201 and 301 characters, synthetic sensitive content, and unavailable TTS returned distinct safe codes without echoing inputs.
 - Independent rehearsal: clean-room agent repeated prerequisites, tests, plugin status, and cached discovery without modifying source.
