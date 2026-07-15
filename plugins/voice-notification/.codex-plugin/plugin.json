@@ -1,6 +1,6 @@
 {
   "name": "voice-notification",
-  "version": "0.1.0+codex.20260715095605",
+  "version": "0.1.0+codex.20260715104243",
   "description": "Speak short Codex requests and wait for typed or voice confirmation on macOS.",
   "author": {
     "name": "ML6 x OpenAI Hackathon Team"

@@ -14,7 +14,7 @@ Use `notify_user` only when work cannot continue without a person's real-world a
 - Never include credentials, secrets, tokens, private code, personal data, or raw tool output.
 - Treat `urgency` as metadata only. Use `normal` unless the situation clearly warrants `low` or `high`; do not imply it changes volume or interrupts other audio.
 - Use `confirmationMode: "text"` by default. Use `voice` only when the user has opted into microphone recording and Groq transcription.
-- For voice confirmation, tell the user before speech ends that five seconds of listening will follow and ask for an explicit phrase such as “confirmed,” “done,” “yes,” “no,” or “not yet.”
+- For voice confirmation, tell the user before speech ends that listening will start immediately, allow five seconds for speech to begin, and ask for an explicit phrase such as “confirmed,” “done,” “yes,” “no,” or “not yet.”
 
 ## Notify and wait
 
@@ -25,4 +25,4 @@ Use `notify_user` only when work cannot continue without a person's real-world a
 5. If the call fails, report the safe error. Do not retry automatically.
 6. Wait for explicit human confirmation before treating the real-world action as complete or continuing blocked work.
 
-Voice mode records one bounded temporary clip, sends it to Groq using only `whisper-large-v3-turbo`, reduces the transcript to a deterministic decision, and deletes the clip. The tool has no notification history or delivery guarantee. Spoken audio may be muted, routed to another device, or overheard.
+Voice mode detects speech locally with the bundled Silero ONNX model. It waits up to five seconds for speech onset, keeps 500 ms of pre-roll, stops after five seconds without speech, and enforces a 30-second utterance cap. It sends one bounded temporary clip to Groq using only `whisper-large-v3-turbo`, reduces the transcript to a deterministic decision, and deletes the clip. Noise or silence never implies confirmation. The tool has no notification history or delivery guarantee. Spoken audio may be muted, routed to another device, or overheard.

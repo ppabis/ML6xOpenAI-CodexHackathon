@@ -2,7 +2,7 @@
 
 ## Architecture Decision
 
-Build a repo-scoped Codex plugin containing instructions and one bundled local STDIO MCP server. The server exposes `notify_user`, validates the request, invokes macOS `/usr/bin/say`, and returns a structured result. There is no UI, cloud API, model call, or storage layer.
+Build a repo-scoped Codex plugin containing instructions and one bundled local STDIO MCP server. The server exposes `notify_user`, validates the request, invokes macOS `/usr/bin/say`, and optionally waits for a bounded voice confirmation. Voice activity is detected locally with a pinned Silero ONNX model; one completed clip is transcribed by Groq. There is no UI, database, or durable storage layer.
 
 This follows current Codex plugin conventions: `.codex-plugin/plugin.json` is the required entry point; plugin components stay at the plugin root; local tools are exposed through an MCP server; and a repo marketplace can make the plugin installable for teammates.
 
@@ -21,11 +21,13 @@ This follows current Codex plugin conventions: `.codex-plugin/plugin.json` is th
 | Tool protocol | Local STDIO MCP server | Supported local Codex tool transport; no port, auth, or network required. |
 | Plugin packaging | Codex manifest + `.mcp.json` + repo marketplace | Smallest shareable plugin shape for a local callable tool. |
 | Speech adapter | Fixed `/usr/bin/say` executable | Built into macOS and requires no external TTS service. |
+| Voice activity | Bundled Silero v6.2 model + pinned `onnxruntime-node` | Distinguishes speech from ambient noise locally and keeps a warm inference session for repeated turns. |
+| Transcription | Groq `whisper-large-v3-turbo` | Transcribes one completed utterance; it is not used for continuous streaming or VAD. |
 | Validation | Explicit schema plus small deterministic safety checks | Predictable length/enum enforcement without claiming comprehensive secret detection. |
 | Tests | Built-in Node test runner with dependency-injected process adapter | No extra test dependency and no audio during automated tests. |
 | Build | None | The MCP command runs the JavaScript entry point directly. |
 
-The MCP SDK required by the generated scaffold is the only expected runtime dependency. Pin it after scaffolding and commit the lockfile.
+The MCP SDK and ONNX Runtime Node binding are pinned runtime dependencies. The Silero model, upstream revision, license, and checksum are committed with the plugin so startup performs no model download.
 
 ## System Components
 
@@ -46,6 +48,8 @@ Local STDIO MCP server
    v
 Structured result to Codex --> Codex reports status and waits for human
 ```
+
+For voice confirmation, `/usr/bin/say` completes before FFmpeg begins streaming 16 kHz mono PCM. A per-capture Silero detector waits five seconds for onset, retains 500 ms of pre-roll, and ends after five seconds without speech or 30 seconds after onset. One private temporary WAV is then transcribed and deterministically classified. The shared ONNX session remains warm, but recurrent detector state never crosses capture boundaries.
 
 ## Data Flow
 

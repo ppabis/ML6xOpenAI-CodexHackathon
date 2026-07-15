@@ -7,7 +7,7 @@ A local macOS Codex plugin that exposes one MCP tool, `notify_user`, for speakin
 - macOS with `/usr/bin/say`
 - Node.js 20.6 or newer
 - An active, audible output device
-- `ffmpeg` with macOS AVFoundation support for optional voice confirmation
+- `ffmpeg` with macOS AVFoundation support for optional streaming voice confirmation
 - A Groq API key for optional voice confirmation; transcription is pinned to `whisper-large-v3-turbo`
 - Person 3's `src/notify-user.js` implementation, which supplies the authoritative validation and speech handler used by the MCP entry point
 
@@ -58,8 +58,10 @@ This fallback changes packaging only; it must use the same entry point and Perso
 - Send only a short, trusted summary. Never send secrets, credentials, raw tool output, private code, or personal data.
 - Call once, report the structured result, and wait for explicit human confirmation. Do not retry automatically.
 - `confirmationMode: "text"` returns `awaiting_confirmation` and keeps confirmation in the Codex task.
-- `confirmationMode: "voice"` records five seconds after speech, transcribes it with only `whisper-large-v3-turbo`, and accepts only a small explicit confirmation/decline phrase set.
-- Ambiguous speech, missing microphone access, missing `ffmpeg`, missing API credentials, and Groq failures fall back to typed confirmation.
+- `confirmationMode: "voice"` waits up to five seconds for actual speech to begin. Noise alone is ignored by the bundled local Silero VAD model.
+- After speech begins, recording continues until five seconds without detected speech, with a 30-second hard utterance limit and 500 ms of pre-roll to avoid clipping the first word.
+- Voice activity detection runs locally through the bundled, checksum-pinned ONNX model. Only one completed temporary clip is sent to Groq, using exactly `whisper-large-v3-turbo`.
+- Only a small explicit confirmation/decline phrase set is accepted. No speech, ambiguous speech, a busy microphone, missing microphone access, missing `ffmpeg`, unavailable ONNX inference, missing API credentials, and Groq failures fall back to typed confirmation.
 - Treat `urgency` as metadata only. It does not change volume or interrupt other audio.
 - A `spoken` result means the local speech process completed; it does not prove the user heard the message or performed the requested action.
 
@@ -68,6 +70,7 @@ This fallback changes packaging only; it must use the same entry point and Perso
 - macOS only; speech depends on `/usr/bin/say` and the machine's current audio routing and volume.
 - Audio may be muted, routed to speakers instead of headphones, inaccessible to some users, or overheard.
 - Voice confirmation sends a temporary audio clip to Groq. The clip is deleted locally after transcription, and neither audio nor transcript is returned or logged.
-- Microphone access must be granted explicitly by macOS. Recording is bounded to five seconds and is never continuous.
+- Microphone access must be granted explicitly by macOS. Listening occurs only for one requested confirmation, stops after five seconds without an onset, and is capped at 30 seconds after speech begins.
+- Only one microphone capture can run at a time. The ONNX session stays warm for efficient sequential confirmations, while detector state is reset between captures.
 - No automatic retry, notification history, cancellation, duplicate suppression, or durable state.
 - The plugin does not complete or verify the requested real-world action.

@@ -83,8 +83,12 @@ Do not place spoken payloads in diagnostic logs. Screenshots and recordings may 
   authorizes progress.
 - Verify the Groq request uses the fixed transcription endpoint and exactly
   `whisper-large-v3-turbo`.
-- Verify recording is five seconds, uses a fixed ffmpeg executable and argument
-  array, and disables shell execution.
+- Verify FFmpeg streams 16 kHz mono PCM through a fixed executable and argument
+  array with shell execution disabled.
+- Verify noise does not trigger onset, 500 ms of pre-roll is retained, five
+  seconds without speech ends capture, and continuous speech stops at 30 seconds.
+- Verify one ONNX session is reused while recurrent state resets for each
+  sequential capture; concurrent capture and shutdown terminate safely.
 - Verify temporary audio is deleted on success and failure, with no transcript
   in the tool result.
 - Verify missing key, recording failure, provider failure, and unclear speech
