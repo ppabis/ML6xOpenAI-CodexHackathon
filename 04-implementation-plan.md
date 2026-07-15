@@ -25,9 +25,9 @@ At 3:00, the three-person team can demonstrate a real local Codex-to-speaker req
 
 ### Person 1
 
-1. Assign names and confirm the defaults in `02-task-breakdown.md`.
-2. Approve the synthetic PR-review message and known-sensitive fixture.
-3. Mark all deferred features out of scope.
+1. Keep Person 1–3 labels and use typed acknowledgement after `spoken`; the 40/200 limits, urgency meanings, no-volume rule, and spoken format are approved.
+2. Keep all deferred features out of scope.
+3. Use the documented synthetic PR-review message and fake password fixture for validation.
 
 ### Persons 2 and 3
 
@@ -47,7 +47,7 @@ At 3:00, the three-person team can demonstrate a real local Codex-to-speaker req
 
 ### Person 3: Safe handler
 
-1. Implement pure validation for required fields, 80/300 limits, urgency enum, control characters, and one small sensitive-pattern set.
+1. Implement pure validation for required fields, 40/200 limits, urgency enum, control characters, and one small sensitive-pattern set.
 2. Compose `<title>. <message>` only after validation.
 3. Inject a process runner; the real runner spawns fixed `/usr/bin/say` with an argument array and shell disabled.
 4. Map exit 0, missing executable, and non-zero exit to stable payload-free results.
@@ -132,4 +132,4 @@ Never cut shell-free execution, length validation, payload-free structured resul
 
 ## After The Demo
 
-Timeout/cancellation, duplicate suppression, richer sensitive-content controls, visual notification, voice preferences, acknowledgement, and Windows/Linux adapters remain separate follow-up work.
+Timeout/cancellation, duplicate suppression, richer sensitive-content controls, visual notification, voice preferences, plugin-managed acknowledgement channels, and Windows/Linux adapters remain separate follow-up work.

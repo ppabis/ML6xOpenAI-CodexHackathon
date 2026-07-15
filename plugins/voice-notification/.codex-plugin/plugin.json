@@ -5,6 +5,7 @@
   "author": {
     "name": "ML6 x OpenAI Hackathon Team"
   },
+  "repository": "https://github.com/ppabis/ML6xOpenAI-CodexHackathon",
   "skills": "./skills/",
   "interface": {
     "displayName": "Voice Notification",

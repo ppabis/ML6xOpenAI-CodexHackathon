@@ -14,7 +14,7 @@ Replace `Person 1`–`Person 3` with names immediately. Codex assists all workst
 
 ## Decision and Review Boundaries
 
-- **Person 1 decides:** final limits, demo wording, scope cuts, test sufficiency, and which claims are presentation-ready.
+- **Person 1 decides:** acknowledgement behavior, demo wording, scope cuts, test sufficiency, and which claims are presentation-ready.
 - **Person 2 decides:** plugin/MCP layout, installation commands, and integration fixes.
 - **Person 3 decides:** validation and process-adapter implementation, subject to Person 2's security review.
 - **Cross-review:** Person 2 reviews shell/process safety; Person 3 reviews MCP integration assumptions; Person 1 validates observable behavior and privacy language.
@@ -24,8 +24,8 @@ Replace `Person 1`–`Person 3` with names immediately. Codex assists all workst
 
 ### A — Product, Evidence, and Presentation (Person 1)
 
-- **0:00–0:15:** confirm the contract and three-hour scope.
-- Create test fixtures and the blocking PR-review scenario.
+- **0:00–0:15:** confirm acknowledgement behavior and the three-hour scope; the 40/200 limits and urgency meanings are already confirmed.
+- Approve test fixtures and the blocking PR-review scenario by **1:30**, before manual validation.
 - Keep `06-pr-summary.md` and `08-codex-workflow-log.md current at each gate.
 - From **1:30**, prepare slides/talking points and the demo sequence while validation continues.
 - At **2:15**, lead feature freeze, manual tests, and two short rehearsals.
@@ -48,7 +48,7 @@ Replace `Person 1`–`Person 3` with names immediately. Codex assists all workst
 
 | Time | Required outcome | If missing |
 | --- | --- | --- |
-| 0:15 | Contract, owners, stack, and demo message locked | Product Lead chooses the documented defaults; no further option analysis. |
+| 0:15 | Acknowledgement contract, stack, and scope cuts locked; role labels remain Person 1–3 | Use the recommended typed-reply acknowledgement; no further option analysis. |
 | 1:00 | Codex discovers the tool and a fixed real announcement plays | Switch immediately to direct project-scoped MCP configuration; disclose plugin-packaging gap. |
 | 1:30 | Validated dynamic message works end to end | Drop sensitive-pattern expansion and all nonessential error variants. |
 | 2:15 | Feature freeze; critical tests and live happy path pass | Demonstrate the strongest verified slice; no new features. |

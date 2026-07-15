@@ -14,13 +14,13 @@ const NOTIFY_USER_TOOL = {
       title: {
         type: "string",
         minLength: 1,
-        maxLength: 80,
+        maxLength: 40,
         description: "Short description of the action that needs attention.",
       },
       message: {
         type: "string",
         minLength: 1,
-        maxLength: 300,
+        maxLength: 200,
         description: "Trusted, non-sensitive summary of what the user should do.",
       },
       urgency: {

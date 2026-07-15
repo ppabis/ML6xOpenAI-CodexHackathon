@@ -67,8 +67,8 @@ Data remains in process memory for the duration of the call. The plugin does not
 
 ```text
 notify_user input
-  title: string, 1..80 characters
-  message: string, 1..300 characters
+  title: string, 1..40 characters
+  message: string, 1..200 characters
   urgency?: "low" | "normal" | "high" (default "normal")
 
 success
@@ -108,6 +108,8 @@ Final MCP configuration fields must be generated or verified against the install
 - Error results omit payloads and process internals that may reveal content.
 - Spoken audio can be overheard and is not an accessible-only notification channel; the visible Codex request remains available.
 - `urgency` is metadata in MVP and never raises system volume or interrupts calls/music.
+- `low` means informational attention, `normal` means PR review/ordinary request, and `high` means critical/incident attention.
+- The speech result and listener acknowledgement are different states: `spoken` means `say` exited successfully, not that a person acknowledged it.
 
 ## Testing Strategy
 
@@ -148,7 +150,7 @@ notifyUser -> spoken -> text pending (default)
 
 ## Decision Owners
 
-- Product Owner confirms limits, urgency semantics, and whether the title is spoken.
+- Listener acknowledgement is represented by a typed confirmation in the current Codex task after `spoken`; plugin-managed acknowledgement channels are deferred.
 - Tech Lead verifies manifest/MCP schemas and package versions during scaffolding.
 - Product/Quality/Demo Lead approves sensitive fixtures, failure evidence, and demo wording.
 

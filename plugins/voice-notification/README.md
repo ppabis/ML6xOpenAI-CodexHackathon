@@ -9,7 +9,6 @@ A local macOS Codex plugin that exposes one MCP tool, `notify_user`, for speakin
 - An active, audible output device
 - `ffmpeg` with macOS AVFoundation support for optional streaming voice confirmation
 - A Groq API key for optional voice confirmation; transcription is pinned to `whisper-large-v3-turbo`
-- Person 3's `src/notify-user.js` implementation, which supplies the authoritative validation and speech handler used by the MCP entry point
 
 ## Develop and test
 
@@ -37,7 +36,7 @@ From the repository root, add the repository as a personal marketplace and insta
 
 ```bash
 codex plugin marketplace add <repo-root>
-codex plugin add voice-notification@personal
+codex plugin add voice-notification@voice-notification-local
 ```
 
 Replace `<repo-root>` with the absolute path to this checkout. After changing plugin files, refresh or reinstall the plugin with the current Codex plugin commands, then start a new Codex task so tool discovery is reloaded. Confirm that the task exposes exactly `notify_user` before the demo.
@@ -50,12 +49,13 @@ If plugin discovery is unavailable, configure the same server directly as a proj
 node ./src/index.js
 ```
 
-This fallback changes packaging only; it must use the same entry point and Person 3 handler. Disclose the fallback during the demo rather than describing it as a plugin install.
+This fallback changes packaging only; it uses the same production entry point and safe validation/speech handler. Disclose the fallback during the demo rather than describing it as a plugin install.
 
 ## Safe use
 
 - Call `notify_user` only when a task cannot continue without a person's action or decision.
 - Send only a short, trusted summary. Never send secrets, credentials, raw tool output, private code, or personal data.
+- Titles are limited to 40 characters and messages to 200 characters.
 - Call once, report the structured result, and wait for explicit human confirmation. Do not retry automatically.
 - `confirmationMode: "text"` returns `awaiting_confirmation` and keeps confirmation in the Codex task.
 - `confirmationMode: "voice"` waits up to five seconds for actual speech to begin. Noise alone is ignored by the bundled local Silero VAD model.

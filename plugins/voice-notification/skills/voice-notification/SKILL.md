@@ -9,7 +9,7 @@ Use `notify_user` only when work cannot continue without a person's real-world a
 
 ## Prepare the request
 
-- Write a short, trusted summary: a title of at most 80 characters and a message of at most 300 characters.
+- Write a short, trusted summary: a title of at most 40 characters and a message of at most 200 characters.
 - State what needs attention and what the person should do next.
 - Never include credentials, secrets, tokens, private code, personal data, or raw tool output.
 - Treat `urgency` as metadata only. Use `normal` unless the situation clearly warrants `low` or `high`; do not imply it changes volume or interrupts other audio.

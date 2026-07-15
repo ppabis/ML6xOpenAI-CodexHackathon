@@ -12,6 +12,7 @@ Do not claim a behavior until its evidence is recorded in `06-pr-summary.md`.
 ## Pre-Demo Checklist
 
 - [ ] Plugin installed and enabled in a fresh Codex session, or direct-MCP fallback clearly documented.
+- [ ] Interactive approval for `notify_user` is configured or rehearsed as a visible demo step.
 - [ ] Active speakers/headphones checked at a suitable volume.
 - [ ] Approved synthetic PR-review message ready.
 - [ ] Automated test summary and one safe failure example ready.
@@ -48,6 +49,8 @@ Show one specific Codex output that a human changed or rejected and explain the 
 4. Show the structured `spoken` result.
 5. Show that Codex waits and does not claim the review happened.
 
+If Codex prompts for tool approval, approve the single call and explain that audio is a local side effect. Do not use noninteractive `codex exec` for the live demo because it cancels approval-gated calls.
+
 **Presenter:** “This is the actual plugin and local MCP path—not a prerecorded primary demo and not cloud text-to-speech.” If the direct-MCP fallback was required, replace this sentence with an explicit packaging-status disclosure.
 
 Say that sentence only if V01, V02, and V05 passed.
@@ -56,7 +59,7 @@ Say that sentence only if V01, V02, and V05 passed.
 
 Demonstrate two concise cases:
 
-1. Submit a 301-character message and show validation rejects it before audio.
+1. Submit a 201-character message and show validation rejects it before audio.
 2. Show the controlled unavailable-TTS case returning `TTS_UNAVAILABLE`, or show its executed automated evidence if a safe live simulation is not available.
 
 Then point to the rule prohibiting secrets, private code, personal data, and raw untrusted output. Explain that deterministic checks are defense in depth, not complete secret detection.
@@ -82,8 +85,8 @@ Name one risk Codex surfaced and the human disposition—for example, keeping vi
 
 ## Evidence To Fill Before Presenting
 
-- Verified test count and command: `[pending]`
-- Clean-install tester/session: `[pending]`
-- Human-changed or rejected Codex output: `[pending]`
-- Confirmed live failure cases: `[pending]`
-- Final known limitation to disclose: `[pending]`
+- Verified test count and command: `npm test` — 17 passed, 0 failed.
+- Clean-install evidence: independent agent reproduced prerequisites, installed/enabled status, tests, and cached MCP discovery; human live repetition remains pending.
+- Human-changed or rejected Codex output: four-role TypeScript plan changed to three-role dependency-free ESM JavaScript delivery.
+- Confirmed failure cases: 201/301 over-limit rejection, synthetic-sensitive rejection, and controlled `TTS_UNAVAILABLE`.
+- Final known limitation to disclose: `say` exit does not prove audibility, and the tool may require interactive approval unless safely pre-approved.

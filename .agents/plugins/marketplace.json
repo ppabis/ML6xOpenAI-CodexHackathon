@@ -1,7 +1,7 @@
 {
-  "name": "personal",
+  "name": "voice-notification-local",
   "interface": {
-    "displayName": "Personal"
+    "displayName": "Voice Notification Local"
   },
   "plugins": [
     {
